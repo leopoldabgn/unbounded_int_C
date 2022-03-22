@@ -4,16 +4,14 @@
 #include <ctype.h>
 #include "unbounded_int.h"
 
-void destroy_unbounded_int(unbounded_int u);
-void print_unbounded_int(unbounded_int u);
-int isSign(char c);
-int isNumber(const char *e);
-
 int main() {
-    unbounded_int u = string2unbounded_int("-22323986786976");
+    unbounded_int u = string2unbounded_int("-22379308999827643656");
     //printf("%ld\n", u.len);
     //printf("%c\n", u.premier->c);
     print_unbounded_int(u);
+    char* str = unbounded_int2string(u);
+    printf("%s\n", str);
+    free(str);
     destroy_unbounded_int(u);
     return EXIT_SUCCESS;
 }
@@ -96,4 +94,24 @@ unbounded_int string2unbounded_int(const char *e) {
     number.dernier = actual;
 
     return number;
+}
+
+char *unbounded_int2string(unbounded_int i) {
+    if(i.signe == '*')
+        return NULL;
+    int sign = i.signe == '-' ? 1 : 0;
+    char* str = malloc(sizeof(char) * (i.len+sign+1));
+    if(str == NULL)
+        return NULL;
+    char* ptr = str;
+    if(sign) {
+        *ptr = '-';
+        ptr++;
+    }
+
+    for(chiffre* current = i.premier;current != NULL;ptr++, current=current->suivant)
+        *ptr = current->c;
+
+    str[i.len + sign] = '\0';
+    return str;
 }
