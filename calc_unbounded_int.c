@@ -10,13 +10,7 @@ int isOutputOption(const char* str);
 int main(int argc, char* argv[]) {
     FILE* source  = NULL,
           *output = NULL;
-    // On a au minimum : ./calc_unbounded_int -i src.txt
-    if(argc < 2) {
-        puts("Il n'y a pas assez d'arguments !");
-        help();
-        exit(1);
-    }
-    
+
     char* arg;
     for(int i=1;i<argc;i+=2) {
         arg = argv[i];
@@ -56,31 +50,20 @@ int main(int argc, char* argv[]) {
             exit(-1);
         }
     }
-    
-    if(output == NULL) {
-        output = fopen("output.txt", "w");
-        if(output == NULL) {
-            printf("Erreur lors de la creation de %s\n", "output.txt");
-            exit(6);
-        }
-    }
-    else if(source == NULL) {
-        puts("Merci de préciser un fichier source : -i <source>");
-        help();
-        exit(7);
-    }
 
+    if(source == NULL)
+        source = stdin;
+    if(output == NULL)
+        output = stdout;
+
+    while((fgetc(source) != EOF));
+
+    char c;
+    while((c = fgetc(source)) != EOF)
+        printf("%c", c);
+    
     fclose(source);
     fclose(output);
-
-    FILE* file = fopen("calc.txt", "r+");
-    if(file == NULL)
-        return EXIT_FAILURE;
-    char c;
-    while((c = fgetc(file)) != EOF) {
-        printf("%c", c);
-    }
-    fclose(file);
     return EXIT_SUCCESS;
 }
 
