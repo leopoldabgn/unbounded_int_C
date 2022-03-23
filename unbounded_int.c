@@ -140,7 +140,7 @@ unbounded_int ll2unbounded_int(long long i) {
     char* str = malloc( length + 1 );
 
     snprintf(str, length + 1, "%lld", i);
-    str[length] = '\0'; //TODO: bug here -> removes an number
+    // str[length] = '\0'; INFO: A terminating null character is automatically appended after the content written.
     unbounded_int res = string2unbounded_int(str);
     free(str);
     return res;
