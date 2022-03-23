@@ -181,7 +181,7 @@ unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
     unbounded_int error = (unbounded_int){.signe='*'};
     if(a.signe == '*' || b.signe == '*')
         return error;
-    unbounded_int subInt = {.premier=NULL, .dernier=NULL, .signe='+'};
+    unbounded_int subInt = {.premier=NULL, .dernier=NULL, .signe='+', .len=a.len};
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////
     // ICI IL FAUDRA VERIFIER SI a > b ou b <= a //
