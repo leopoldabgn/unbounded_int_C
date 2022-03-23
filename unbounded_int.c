@@ -17,17 +17,21 @@ int main() {
     */
     unbounded_int u1 = string2unbounded_int("666");
     unbounded_int u2 = string2unbounded_int("66");
+    unbounded_int u3 = ll2unbounded_int(1000);
 
     unbounded_int sub = unbounded_int_difference(u1, u2);
 
     // Je lis dans les deux sens pour verifier que tous
     // les liens precedent/suivant, premier/dernier fonctionne.
     print_unbounded_int(sub);
+    print_unbounded_int(u3);
+
     print_unbounded_int_left(sub);
 
     destroy_unbounded_int(sub);
     destroy_unbounded_int(u1);
     destroy_unbounded_int(u2);
+    destroy_unbounded_int(u3);
 
     return EXIT_SUCCESS;
 }
@@ -122,6 +126,21 @@ unbounded_int string2unbounded_int(const char *e) {
     number.dernier = actual;
 
     return number;
+}
+
+unbounded_int ll2unbounded_int(long long i) {
+    /*
+        @param i: integer  
+        @return: integer represented in unbounded_int structure 
+
+        This function converts a long long in a char*, then calls string2unbounded_int which returns a struct.
+    */
+    int number = (int) i;
+    int length = snprintf( NULL, 0, "%d", number);
+    char* str = malloc( length + 1 );
+
+    snprintf(str, length + 1, "%d", number);
+    return string2unbounded_int(str);
 }
 
 char *unbounded_int2string(unbounded_int i) {
