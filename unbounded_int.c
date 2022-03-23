@@ -140,7 +140,9 @@ unbounded_int ll2unbounded_int(long long i) {
     char* str = malloc( length + 1 );
 
     snprintf(str, length + 1, "%d", number);
-    return string2unbounded_int(str);
+    unbounded_int res = string2unbounded_int(str);
+    free(str);
+    return res;
 }
 
 char *unbounded_int2string(unbounded_int i) {
