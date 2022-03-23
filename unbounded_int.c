@@ -135,11 +135,11 @@ unbounded_int ll2unbounded_int(long long i) {
 
         This function converts a long long in a char*, then calls string2unbounded_int which returns a struct.
     */
-    int number = (int) i;
-    int length = snprintf( NULL, 0, "%d", number);
+
+    int length = snprintf( NULL, 0, "%lld", i);
     char* str = malloc( length + 1 );
 
-    snprintf(str, length + 1, "%d", number);
+    snprintf(str, length + 1, "%lld", i);
     unbounded_int res = string2unbounded_int(str);
     free(str);
     return res;
