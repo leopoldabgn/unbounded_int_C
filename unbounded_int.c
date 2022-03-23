@@ -5,6 +5,7 @@
 #include "unbounded_int.h"
 
 int main() {
+    /*
     unbounded_int u = string2unbounded_int("-22379308999827643656");
     //printf("%ld\n", u.len);
     //printf("%c\n", u.premier->c);
@@ -13,10 +14,25 @@ int main() {
     printf("%s\n", str);
     free(str);
     destroy_unbounded_int(u);
+    */
+    unbounded_int u1 = string2unbounded_int("666");
+    unbounded_int u2 = string2unbounded_int("66");
+
+    unbounded_int sub = unbounded_int_difference(u1, u2);
+
+    // Je lis dans les deux sens pour verifier que tous
+    // les liens precedent/suivant, premier/dernier fonctionne.
+    print_unbounded_int(sub);
+    print_unbounded_int_left(sub);
+
+    destroy_unbounded_int(sub);
+    destroy_unbounded_int(u1);
+    destroy_unbounded_int(u2);
+
     return EXIT_SUCCESS;
 }
 
-void print_unbounded_int(unbounded_int u) {
+static void print_unbounded_int(unbounded_int u) {
     if(u.signe == '*') {
         puts("ERROR NUMBER");
         return;
@@ -28,7 +44,19 @@ void print_unbounded_int(unbounded_int u) {
     puts(""); // Retour a la ligne.
 }
 
-void destroy_unbounded_int(unbounded_int u) {
+static void print_unbounded_int_left(unbounded_int u) {
+    if(u.signe == '*') {
+        puts("ERROR NUMBER");
+        return;
+    }
+    
+    for(chiffre* c=u.dernier;c != NULL;c=c->precedent) {
+        printf("%c", c->c);
+    }
+    printf("%c\n", u.signe);
+}
+
+static void destroy_unbounded_int(unbounded_int u) {
     if(u.signe == '*' || u.len == 0)
         return;
     chiffre* c = u.premier, *next = u.premier;
@@ -38,11 +66,11 @@ void destroy_unbounded_int(unbounded_int u) {
     }
 }
 
-int isSign(char c) {
+static int isSign(char c) {
     return (c == '+' || c == '-') ? 1 : 0;
 }
 
-int isNumber(const char *e) {
+static int isNumber(const char *e) {
     char* c=(char *)e;
     if(*c == '\0')
         return 0;
@@ -114,4 +142,61 @@ char *unbounded_int2string(unbounded_int i) {
 
     str[i.len + sign] = '\0';
     return str;
+}
+
+void switchUInt(unbounded_int *a, unbounded_int *b) {
+    unbounded_int* tmp = a;
+    a = b;
+    b = tmp;
+}
+
+void switchSign(unbounded_int *u) {
+    if(u != NULL)
+        u->signe = u->signe == '-' ? '+' : '-';
+}
+
+unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
+    unbounded_int error = (unbounded_int){.signe='*'};
+    if(a.signe == '*' || b.signe == '*')
+        return error;
+    unbounded_int subInt = {.premier=NULL, .dernier=NULL, .signe='+'};
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ICI IL FAUDRA VERIFIER SI a > b ou b <= a //
+    /////////////////////////////////////////////////////////////////////////////////////////////////////
+    // ON SUPPOSE a > b
+    chiffre* pa = a.dernier, *pb = b.dernier,
+            *cSub = NULL, *prev = NULL;
+    int r = 0, sub = 0;
+    
+    for(;pa != NULL && pb != NULL;pa=pa->precedent, pb=pb->precedent) {
+        cSub = malloc(sizeof(chiffre));
+        if(cSub == NULL)
+            return error;
+        if(pa == a.dernier || pb == b.dernier)
+            subInt.dernier = cSub;
+        sub = pa->c - pb->c + r; // Pas besoin de convertir pa->c et pb->c en int car : '5'-'3' == 5-3
+        r = sub < 0 ? -1 : 0;
+        cSub->c = sub < 0 ? (sub+10)+'0' : sub+'0';
+        cSub->suivant = prev; // prev peut etre NULL
+        if(prev != NULL)
+            prev->precedent = cSub;
+        prev = cSub;
+    }
+
+    for(;pa != NULL;pa = pa->precedent) {
+        cSub = malloc(sizeof(chiffre));
+        if(cSub == NULL)
+            return error;
+        cSub->c = pa->c + r;
+        r=0;
+        cSub->suivant = prev; // prev peut etre NULL
+        if(prev != NULL)
+            prev->precedent = cSub;
+        prev = cSub;
+    }
+    subInt.premier = prev;
+    subInt.premier->precedent = NULL;
+
+    return subInt;
 }

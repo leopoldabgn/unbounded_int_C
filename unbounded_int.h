@@ -24,11 +24,12 @@ char *unbounded_int2string(unbounded_int i);
 int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b);
 int unbounded_int_cmp_ll(unbounded_int a, long long b);
 unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b);
-unbounded_int unbounded_int_difference( unbounded_int a, unbounded_int b);
-unbounded_int unbounded_int_produit( unbounded_int a, unbounded_int b);
+unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b);
+unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b);
 
 static void destroy_unbounded_int(unbounded_int u);
 static void print_unbounded_int(unbounded_int u);
+static void print_unbounded_int_left(unbounded_int u);
 static int isSign(char c);
 static int isNumber(const char *e);
 
