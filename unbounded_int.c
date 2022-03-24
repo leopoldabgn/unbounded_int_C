@@ -15,10 +15,12 @@ int main() {
     free(str);
     destroy_unbounded_int(u);
     */
-    unbounded_int u1 = string2unbounded_int("666");
-    unbounded_int u2 = string2unbounded_int("66");
+    unbounded_int u1 = string2unbounded_int("754");
+    unbounded_int u2 = string2unbounded_int("25");
     unbounded_int u3 = ll2unbounded_int(1000);
 
+    printf("unbounded_int_cmp_unbounded_int(u1, u2) = %d\n", unbounded_int_cmp_unbounded_int(u1, u2));
+    printf("unbounded_int_cmp_unbounded_int(u2, u1) = %d\n", unbounded_int_cmp_unbounded_int(u2, u1));
     unbounded_int sub = unbounded_int_difference(u1, u2);
 
     // Je lis dans les deux sens pour verifier que tous
@@ -132,7 +134,6 @@ unbounded_int ll2unbounded_int(long long i) {
     /*
         @param i: integer  
         @return: integer represented in unbounded_int structure 
-
         This function converts a long long in a char*, then calls string2unbounded_int which returns a struct.
     */
 
@@ -144,6 +145,30 @@ unbounded_int ll2unbounded_int(long long i) {
     unbounded_int res = string2unbounded_int(str);
     free(str);
     return res;
+}
+
+int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
+    /*
+        @param: a -> integer represented by unbouded_int struct.
+        @param: b -> integer represented by unbouded_int struct.
+        @return: -1 if a < b; 0 if a == b; 1 if a > b
+
+        Comment (delete after reading): Je crois que si on pouvait faire  a - b ce serait plus simple, mais car
+        dans les exercices cela n'est pas encore fait en théorie, cette méthode de soustraction sera crée dans l'exo 7 donc
+        je pense qu'il veut que je compare élément par élement au lieu de voir le résultat de a - b
+    */
+
+   if (a.signe == '+' && b.signe == '-') return 1;
+   if (b.signe == '+' && a.signe == '-') return -1;
+
+   if(a.len > b.len) return 1;
+   if(a.len < b.len) return -1;
+
+    for(chiffre *n_a= a.premier, *n_b = b.premier; n_a != NULL && n_b != NULL; n_a=n_a->suivant, n_b = n_b->suivant) {
+        if(n_a->c > n_b->c) return 1;
+        if(n_a->c < n_b->c) return -1;
+    }
+    return 0;
 }
 
 char *unbounded_int2string(unbounded_int i) {
@@ -176,6 +201,7 @@ void switchSign(unbounded_int *u) {
     if(u != NULL)
         u->signe = u->signe == '-' ? '+' : '-';
 }
+
 
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
     unbounded_int error = (unbounded_int){.signe='*'};
