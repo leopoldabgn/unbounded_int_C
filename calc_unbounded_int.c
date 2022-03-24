@@ -56,8 +56,6 @@ int main(int argc, char* argv[]) {
     if(output == NULL)
         output = stdout;
 
-    while((fgetc(source) != EOF));
-
     char c;
     while((c = fgetc(source)) != EOF)
         printf("%c", c);
