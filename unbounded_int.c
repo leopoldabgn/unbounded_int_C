@@ -21,6 +21,13 @@ int main() {
 
     printf("unbounded_int_cmp_unbounded_int(u1, u2) = %d\n", unbounded_int_cmp_unbounded_int(u1, u2));
     printf("unbounded_int_cmp_unbounded_int(u2, u1) = %d\n", unbounded_int_cmp_unbounded_int(u2, u1));
+
+    char* u1_str = unbounded_int2string(u1);
+    long long test = 911;
+    printf("unbounded_cmp between unbounded_int %s and long long %lld = %d\n",
+           u1_str, test, unbounded_int_cmp_ll(u1, test));
+    free(u1_str);
+
     unbounded_int sub = unbounded_int_difference(u1, u2);
 
     // Je lis dans les deux sens pour verifier que tous
@@ -130,6 +137,16 @@ unbounded_int string2unbounded_int(const char *e) {
     return number;
 }
 
+char* longToStr(long long i) {
+    int length = snprintf( NULL, 0, "%lld", i);
+    char* str = malloc(length + 1);
+
+    snprintf(str, length + 1, "%lld", i);
+    // str[length] = '\0'; INFO: A terminating null character is automatically appended after the content written.
+
+    return str;
+}
+
 unbounded_int ll2unbounded_int(long long i) {
     /*
         @param i: integer  
@@ -137,11 +154,8 @@ unbounded_int ll2unbounded_int(long long i) {
         This function converts a long long in a char*, then calls string2unbounded_int which returns a struct.
     */
 
-    int length = snprintf( NULL, 0, "%lld", i);
-    char* str = malloc(length + 1);
+    char* str = longToStr(i);
 
-    snprintf(str, length + 1, "%lld", i);
-    // str[length] = '\0'; INFO: A terminating null character is automatically appended after the content written.
     unbounded_int res = string2unbounded_int(str);
     free(str);
     return res;
@@ -169,6 +183,17 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         if(n_a->c < n_b->c) return -1;
     }
     return 0;
+}
+
+int unbounded_int_cmp_ll(unbounded_int a, long long b) {
+    char* str = longToStr(b);
+    unbounded_int bu = string2unbounded_int(str); // On convertit b en unbounded_int
+    free(str); // On libere la memoire de str
+    
+    int result = unbounded_int_cmp_unbounded_int(a, bu); // On compare a et bu
+    destroy_unbounded_int(bu); // On detruit bu.
+
+    return result;
 }
 
 char *unbounded_int2string(unbounded_int i) {
@@ -202,8 +227,12 @@ void switchSign(unbounded_int *u) {
         u->signe = u->signe == '-' ? '+' : '-';
 }
 
-
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
+    // A FAIRE EN UTILISANT SOMME ET DIFFERENCE_AUX
+    return unbounded_int_difference_aux(a, b);
+}
+
+static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b) {
     unbounded_int error = (unbounded_int){.signe='*'};
     if(a.signe == '*' || b.signe == '*')
         return error;

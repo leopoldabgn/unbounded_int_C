@@ -33,4 +33,6 @@ static void print_unbounded_int_left(unbounded_int u);
 static int isSign(char c);
 static int isNumber(const char *e);
 
+static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b);
+
 #endif

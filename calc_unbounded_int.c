@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#define DEFAULT_OUTPUT output.txt
 
 void help();
 int isInputOption(const char* str);
