@@ -29,8 +29,10 @@ int main() {
     free(u1_str);
 
     unbounded_int sub = unbounded_int_difference(u1, u2);
-    // unbounded_int som = unbounded_int_somme_aux(u1, u2);
-
+   // unbounded_int som = unbounded_int_somme_aux(u1, u2);
+    //print_unbounded_int(som);
+    //destroy_unbounded_int(som);
+    
     // Je lis dans les deux sens pour verifier que tous
     // les liens precedent/suivant, premier/dernier fonctionne.
     print_unbounded_int(sub);
@@ -213,17 +215,18 @@ unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     unbounded_int sommeInt = {.premier=NULL, .dernier=NULL, .signe='+'};
     int retenue = 0;
     chiffre *c_n = NULL, *c_prev_n = NULL, *a_n=a.dernier, *b_n=b.dernier;
-
+    
     for(; a_n != NULL && b_n != NULL; a_n=a_n->precedent, b_n=b_n->precedent) {
-        int tmp = a_n->c + b_n->c + retenue;
+        int tmp = (a_n->c-'0') + (b_n->c-'0') + retenue;
         retenue = tmp / 10;
         c_n = malloc(sizeof(chiffre));
         if(c_n == NULL) return error;
         if(a_n == a.dernier || b_n == b.dernier) {sommeInt.dernier = c_n;}
-        c_n->c = tmp % 10;
+        c_n->c = (tmp % 10) + '0';
         c_n->suivant = c_prev_n;
-        if(c_prev_n != NULL) c_prev_n->suivant = c_n;
+        if(c_prev_n != NULL) c_prev_n->precedent = c_n;
         c_prev_n = c_n;
+        
     }
 
     if (a.len > b.len) {
@@ -250,7 +253,7 @@ unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_in
         if(c_n == NULL) return error;
         c_n->c = tmp % 10;
         c_n->suivant = prev;
-        prev->suivant = c_n;
+        prev->precedent = c_n;
         prev = c_n;
     }
 
