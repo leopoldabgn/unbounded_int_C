@@ -137,7 +137,7 @@ unbounded_int ll2unbounded_int(long long i) {
     */
 
     int length = snprintf( NULL, 0, "%lld", i);
-    char* str = malloc( length + 1 );
+    char* str = malloc(length + 1);
 
     snprintf(str, length + 1, "%lld", i);
     // str[length] = '\0'; INFO: A terminating null character is automatically appended after the content written.
