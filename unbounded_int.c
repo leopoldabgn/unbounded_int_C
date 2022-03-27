@@ -29,7 +29,7 @@ int main() {
     free(u1_str);
 
     unbounded_int sub = unbounded_int_difference(u1, u2);
-   // unbounded_int som = unbounded_int_somme_aux(u1, u2);
+    // unbounded_int som = unbounded_int_somme_aux(u1, u2);
     //print_unbounded_int(som);
     //destroy_unbounded_int(som);
     
@@ -203,7 +203,7 @@ int unbounded_int_cmp_ll(unbounded_int a, long long b) {
     return result;
 }
 
-unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
+static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     /*
         @consider: a, b > 0.
         @todo: need to add lenght. 
@@ -241,7 +241,7 @@ unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     return sommeInt;
 }
 
-unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error) {
+static unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error) {
     /*
         @info: fonction auxiliaire, utilisé par unbounded_int_somme_aux(param1, param2)
     */

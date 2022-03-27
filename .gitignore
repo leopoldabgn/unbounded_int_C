@@ -51,6 +51,8 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# PDF
+*.pdf
 
 # For personal notes
 notes.txt
