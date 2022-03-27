@@ -56,3 +56,8 @@ dkms.conf
 
 # For personal notes
 notes.txt
+
+# Executables
+unbounded_int
+calc_unbounded_int
+test_unbounded

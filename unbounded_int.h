@@ -34,6 +34,7 @@ static void print_unbounded_int(unbounded_int u);
 static void print_unbounded_int_left(unbounded_int u);
 static int isSign(char c);
 static int isNumber(const char *e);
+static unbounded_int delete_useless_zero(unbounded_int nb);
 
 static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
 static unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error);
