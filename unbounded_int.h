@@ -27,17 +27,4 @@ unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b);
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b);
 unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b);
 
-/* FONCTIONS AUXILIAIRES */
-
-static void destroy_unbounded_int(unbounded_int u);
-static void print_unbounded_int(unbounded_int u);
-static void print_unbounded_int_left(unbounded_int u);
-static int isSign(char c);
-static int isNumber(const char *e);
-static unbounded_int delete_useless_zero(unbounded_int nb);
-
-static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
-static unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error);
-static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b);
-
 #endif
