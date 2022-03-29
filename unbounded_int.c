@@ -40,12 +40,13 @@ int main() {
     printf("unbounded_cmp between unbounded_int %s and long long %lld = %d\n",
            u1_str, test, unbounded_int_cmp_ll(u1, test));
     free(u1_str);
-
+    printf("*");
     print_unbounded_int(u1);
+    printf("**");
     print_unbounded_int(u2);
-
+    printf("***");
     unbounded_int sub = unbounded_int_difference(u1, u2);
-    
+    printf("****");
     unbounded_int som = unbounded_int_somme_aux(u1, u2);
     print_unbounded_int(som);
     // destroy_unbounded_int(som);
@@ -215,6 +216,7 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
 }
 
 int unbounded_int_cmp_ll(unbounded_int a, long long b) {
+    printf("unbounded_int_cmp_ll(param1, param2);");
     char* str = longToStr(b);
     unbounded_int bu = string2unbounded_int(str); // On convertit b en unbounded_int
     free(str); // On libere la memoire de str
@@ -266,17 +268,18 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
 }
 
 static unbounded_int loop_and_add(chiffre* x_next, int retenue, chiffre* x_n_prev, unbounded_int error) {
+    printf("loop_and_add(param1, param2, param3, param4, param5);");
     /*
         @info: fonction auxiliaire, utilisé par unbounded_int_somme_aux(param1, param2)
     */
     chiffre* prev = x_next;
     chiffre *c_n = NULL;
     for(; x_next != NULL; x_next = x_next->precedent) {
-        int tmp = x_next->c + retenue; // @bug d'addition?
+        int tmp = (x_next->c-'0') + retenue; // @bug d'addition?
         retenue = tmp / 10;
         c_n = malloc(sizeof(chiffre)); // @bug: j'écrase c_n, réparer. 
         if(c_n == NULL) return error;
-        c_n->c = tmp % 10;
+        c_n->c = (tmp % 10)+'0';
         c_n->suivant = x_n_prev;
         prev->precedent = c_n;
         prev = c_n;
@@ -329,6 +332,7 @@ static unbounded_int delete_useless_zero(unbounded_int nb) {
 }
 
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
+    printf("unbounded_int_difference(param1, param2);");
     if(a.signe == '*' || b.signe == '*')
         return (unbounded_int){.signe='*'};
     if(a.signe == '+' && b.signe == '-') {
