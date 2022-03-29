@@ -4,6 +4,19 @@
 #include <ctype.h>
 #include "unbounded_int.h"
 
+/* FONCTIONS AUXILIAIRES */
+
+static void destroy_unbounded_int(unbounded_int u);
+static void print_unbounded_int(unbounded_int u);
+static void print_unbounded_int_left(unbounded_int u);
+static int isSign(char c);
+static int isNumber(const char *e);
+static unbounded_int delete_useless_zero(unbounded_int nb);
+
+static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
+static unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error);
+static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b);
+
 int main() {
     /*
     unbounded_int u = string2unbounded_int("-22379308999827643656");
@@ -15,8 +28,8 @@ int main() {
     free(str);
     destroy_unbounded_int(u);
     */
-    unbounded_int u1 = string2unbounded_int("100");
-    unbounded_int u2 = string2unbounded_int("15");
+    unbounded_int u1 = string2unbounded_int("-0000100");
+    unbounded_int u2 = string2unbounded_int("-00000000015");
     unbounded_int u3 = ll2unbounded_int(1000);
 
     printf("unbounded_int_cmp_unbounded_int(u1, u2) = %d\n", unbounded_int_cmp_unbounded_int(u1, u2));
@@ -28,17 +41,25 @@ int main() {
            u1_str, test, unbounded_int_cmp_ll(u1, test));
     free(u1_str);
 
+    print_unbounded_int(u1);
+    print_unbounded_int(u2);
+
     unbounded_int sub = unbounded_int_difference(u1, u2);
     
     unbounded_int som = unbounded_int_somme_aux(u1, u2);
     print_unbounded_int(som);
     // destroy_unbounded_int(som);
+    // unbounded_int som = unbounded_int_somme_aux(u1, u2);
+    //print_unbounded_int(som);
+    //destroy_unbounded_int(som);
     
     // Je lis dans les deux sens pour verifier que tous
     // les liens precedent/suivant, premier/dernier fonctionne.
     print_unbounded_int(sub);
     print_unbounded_int(u3);
     print_unbounded_int_left(sub);
+
+    print_unbounded_int(u3);
 
     destroy_unbounded_int(sub);
     destroy_unbounded_int(som);
@@ -138,7 +159,7 @@ unbounded_int string2unbounded_int(const char *e) {
         actual->suivant = NULL;
     number.dernier = actual;
 
-    return number;
+    return delete_useless_zero(number); // On supprime les 0 inutiles si besoin.
 }
 
 char* longToStr(long long i) {
@@ -240,6 +261,7 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
 
     sommeInt.premier = c_n;
     sommeInt.premier->precedent = NULL;
+
     return sommeInt;
 }
 
@@ -291,20 +313,46 @@ char *unbounded_int2string(unbounded_int i) {
     return str;
 }
 
-void switchUInt(unbounded_int *a, unbounded_int *b) {
-    unbounded_int* tmp = a;
-    a = b;
-    b = tmp;
-}
-
-void switchSign(unbounded_int *u) {
-    if(u != NULL)
-        u->signe = u->signe == '-' ? '+' : '-';
+// Permet de retirer les '0' inutile au debut d'un nombre.
+static unbounded_int delete_useless_zero(unbounded_int nb) {
+    if(nb.signe == '*' || nb.len <= 1)
+        return nb;
+    chiffre* c = nb.premier;
+    for(;c->c == '0' && c != nb.dernier;) {
+        c = c->suivant; // c->suivant forcement different de NULL ici.
+        free(c->precedent);
+        c->precedent = NULL;
+        nb.len--;
+    }
+    nb.premier = c; // c ne peut pas etre NULL ici.
+    return nb;
 }
 
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
-    // A FAIRE EN UTILISANT SOMME ET DIFFERENCE_AUX
-    return unbounded_int_difference_aux(a, b);
+    if(a.signe == '*' || b.signe == '*')
+        return (unbounded_int){.signe='*'};
+    if(a.signe == '+' && b.signe == '-') {
+        b.signe = '+';
+        return b; // return unbounded_int_somme(a, b);
+    }
+    else if(a.signe == '-' && b.signe == '+') {
+        a.signe = '+';
+        unbounded_int sum; // = unbounded_int_somme(b, a);
+        sum.signe = '-';
+        return sum;
+    }
+    else if(a.signe == '-' && b.signe == '-') {
+        a.signe = '+';
+        b.signe = '+';
+        return unbounded_int_difference(b, a);
+    }
+    // a, b >= 0
+    if(unbounded_int_cmp_unbounded_int(a, b) >= 0)
+        return unbounded_int_difference_aux(a, b);
+    // Si a < b. Alors on fait -(b-a)
+    unbounded_int result = unbounded_int_difference_aux(b, a);
+    result.signe = '-';
+    return result;
 }
 
 static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b) {
@@ -313,19 +361,17 @@ static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int
         return error;
     unbounded_int subInt = {.premier=NULL, .dernier=NULL, .signe='+', .len=a.len};
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
-    // ICI IL FAUDRA VERIFIER SI a > b ou b <= a //
-    /////////////////////////////////////////////////////////////////////////////////////////////////////
     // ON SUPPOSE a > b
     chiffre* pa = a.dernier, *pb = b.dernier,
             *cSub = NULL, *prev = NULL;
     int r = 0, sub = 0;
     
-    for(;pa != NULL && pb != NULL;pa=pa->precedent, pb=pb->precedent) {
+    // On verifie seulement si pb != NULL car pa a une taille >= pb
+    for(;pb != NULL;pa=pa->precedent, pb=pb->precedent) {
         cSub = malloc(sizeof(chiffre));
         if(cSub == NULL)
             return error;
-        if(pa == a.dernier || pb == b.dernier)
+        if(pa == a.dernier) // Pas besoin de verifier si pb == b.dernier
             subInt.dernier = cSub;
         sub = pa->c - pb->c + r; // Pas besoin de convertir pa->c et pb->c en int car : '5'-'3' == 5-3
         r = sub < 0 ? -1 : 0;
@@ -336,6 +382,7 @@ static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int
         prev = cSub;
     }
 
+    // Ici, pb == NULL. On parcourt (ou pas) les chiffres restants de a
     for(;pa != NULL;pa = pa->precedent) {
         cSub = malloc(sizeof(chiffre));
         if(cSub == NULL)
@@ -350,5 +397,5 @@ static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int
     subInt.premier = prev;
     subInt.premier->precedent = NULL;
 
-    return subInt;
+    return delete_useless_zero(subInt);;
 }
