@@ -28,8 +28,8 @@ int main() {
     free(str);
     destroy_unbounded_int(u);
     */
-    unbounded_int u1 = string2unbounded_int("9");
-    unbounded_int u2 = string2unbounded_int("10");
+    unbounded_int u1 = string2unbounded_int("0");
+    unbounded_int u2 = string2unbounded_int("19");
     unbounded_int u3 = ll2unbounded_int(1000);
 
     printf("unbounded_int_cmp_unbounded_int(u1, u2) = %d\n", unbounded_int_cmp_unbounded_int(u1, u2));
@@ -50,6 +50,7 @@ int main() {
 
     // Je lis dans les deux sens pour verifier que tous
     // les liens precedent/suivant, premier/dernier fonctionne.
+    printf("Soustraction: ");
     print_unbounded_int(sub);
     print_unbounded_int(u3);
     printf("Somme: ");
@@ -91,12 +92,20 @@ static void print_unbounded_int_left(unbounded_int u) {
 }
 
 static void destroy_unbounded_int(unbounded_int u) {
-    if(u.signe == '*' || u.len == 0)
+    if(u.signe == '*')
         return;
+    int len = 0;
     chiffre* c = u.premier, *next = u.premier;
     for(;c != NULL;c=next) {
         next = next->suivant;
         free(c);
+        len++;
+    }
+    if(u.len != len) {
+        puts("##############################");
+        puts("ERREUR: la len n'est pas pas la BONNE VALEUR !");
+        printf("Elle vaut %ld alors que la vrai len semble etre %d\n", u.len, len);
+        puts("##############################");
     }
 }
 
@@ -211,7 +220,6 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
 }
 
 int unbounded_int_cmp_ll(unbounded_int a, long long b) {
-    // printf("\nunbounded_int_cmp_ll(param1, param2);\n");
     char* str = longToStr(b);
     unbounded_int bu = string2unbounded_int(str); // On convertit b en unbounded_int
     free(str); // On libere la memoire de str
@@ -231,7 +239,7 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     if(a.signe == '*' || b.signe == '*')
         return error;
 
-    unbounded_int sommeInt = {.premier=NULL, .dernier=NULL, .signe='+'};
+    unbounded_int sommeInt = {.premier=NULL, .dernier=NULL, .signe='+', .len=0};
     int retenue = 0;
     chiffre *c_n = NULL, *c_prev_n = NULL, *a_n=a.dernier, *b_n=b.dernier;
     
@@ -245,20 +253,20 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
         c_n->suivant = c_prev_n;
         if(c_prev_n != NULL) c_prev_n->precedent = c_n;
         c_prev_n = c_n;
-        
+        sommeInt.len++;
     }
 
     if (a.len > b.len) {
         for(;a_n != NULL; a_n = a_n->precedent) {
             int tmp = (a_n->c-'0') + retenue;
-             retenue = tmp / 10;
-
+            retenue = tmp / 10;
             c_n = malloc(sizeof(chiffre));
             if(c_n == NULL) return error;
             c_n->c = (tmp % 10) + '0';
             c_n->suivant = c_prev_n;
             c_prev_n->precedent = c_n;
             c_prev_n = c_n;
+            sommeInt.len++;
         }
     }
     if (b.len > a.len) {
@@ -271,7 +279,7 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
             c_n->suivant = c_prev_n;
             c_prev_n->precedent = c_n;
             c_prev_n = c_n;
-            printf("b > a");
+            sommeInt.len++;
         }
     }
 
@@ -317,7 +325,6 @@ static unbounded_int delete_useless_zero(unbounded_int nb) {
 }
 
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
-    printf("unbounded_int_difference(param1, param2);");
     if(a.signe == '*' || b.signe == '*')
         return (unbounded_int){.signe='*'};
     if(a.signe == '+' && b.signe == '-') {
