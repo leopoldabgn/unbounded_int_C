@@ -23,8 +23,7 @@ unbounded_int ll2unbounded_int(long long i);
 char *unbounded_int2string(unbounded_int i);
 int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b);
 int unbounded_int_cmp_ll(unbounded_int a, long long b);
-unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
-unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error);
+
 unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b);
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b);
 unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b);
@@ -36,5 +35,6 @@ static int isSign(char c);
 static int isNumber(const char *e);
 
 static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b);
-
+static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
+static unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error);
 #endif

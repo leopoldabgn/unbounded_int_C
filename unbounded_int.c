@@ -29,20 +29,19 @@ int main() {
     free(u1_str);
 
     unbounded_int sub = unbounded_int_difference(u1, u2);
-   // unbounded_int som = unbounded_int_somme_aux(u1, u2);
-    //print_unbounded_int(som);
-    //destroy_unbounded_int(som);
+    
+    unbounded_int som = unbounded_int_somme_aux(u1, u2);
+    print_unbounded_int(som);
+    // destroy_unbounded_int(som);
     
     // Je lis dans les deux sens pour verifier que tous
     // les liens precedent/suivant, premier/dernier fonctionne.
     print_unbounded_int(sub);
-    // print_unbounded_int(som);
     print_unbounded_int(u3);
-
     print_unbounded_int_left(sub);
 
     destroy_unbounded_int(sub);
-    // destroy_unbounded_int(som);
+    destroy_unbounded_int(som);
     destroy_unbounded_int(u1);
     destroy_unbounded_int(u2);
     destroy_unbounded_int(u3);
@@ -177,6 +176,8 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         @see (delete after reading): Je crois que si on pouvait faire  a - b ce serait plus simple, mais car
         dans les exercices cela n'est pas encore fait en théorie, cette méthode de soustraction sera crée dans l'exo 7 donc
         je pense qu'il veut que je compare élément par élement au lieu de voir le résultat de a - b
+
+        @bug: cas où a, b < 0!
     */
 
    if (a.signe == '+' && b.signe == '-') return 1;
@@ -203,7 +204,8 @@ int unbounded_int_cmp_ll(unbounded_int a, long long b) {
     return result;
 }
 
-unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
+static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
+    printf("unbounded_int_somme_aux(param1, param2);");
     /*
         @consider: a, b > 0.
         @todo: need to add lenght. 
@@ -241,18 +243,19 @@ unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     return sommeInt;
 }
 
-unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* c_n, unbounded_int error) {
+static unbounded_int loop_and_add(chiffre* x_next, int retenue, chiffre* x_n_prev, unbounded_int error) {
     /*
         @info: fonction auxiliaire, utilisé par unbounded_int_somme_aux(param1, param2)
     */
-    chiffre* prev = x_n;
-    for(; x_n != NULL; x_n = x_n->precedent) {
-        int tmp = x_n->c + retenue;
+    chiffre* prev = x_next;
+    chiffre *c_n = NULL;
+    for(; x_next != NULL; x_next = x_next->precedent) {
+        int tmp = x_next->c + retenue; // @bug d'addition?
         retenue = tmp / 10;
-        c_n = malloc(sizeof(chiffre));
+        c_n = malloc(sizeof(chiffre)); // @bug: j'écrase c_n, réparer. 
         if(c_n == NULL) return error;
         c_n->c = tmp % 10;
-        c_n->suivant = prev;
+        c_n->suivant = x_n_prev;
         prev->precedent = c_n;
         prev = c_n;
     }
