@@ -17,6 +17,8 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
 static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b);
 static int unbounded_greater_equal_zero(unbounded_int a);
 static int unbounded_lesser_equal_zero(unbounded_int a);
+static unbounded_int create_new_unbounded_int(char signe, size_t len, chiffre* premier, chiffre* dernier);
+
 
 int main() {
     /*
@@ -234,8 +236,10 @@ int unbounded_int_cmp_ll(unbounded_int a, long long b) {
 static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     /*
         @consider: a, b > 0.
-        @todo: need to add lenght. 
+        @info: auxiliary function used in unbouded_int_somme.
+        @todo: refactor operations when a.len > b.len (b.len > a.len) into a function
     */
+
     unbounded_int error = (unbounded_int){.signe='*'};
     if(a.signe == '*' || b.signe == '*')
         return error;
@@ -257,7 +261,7 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
         sommeInt.len++;
     }
 
-    if (a.len > b.len) { /*@todo: refactor this into a function*/
+    if (a.len > b.len) { 
         for(;a_n != NULL; a_n = a_n->precedent) {
             int tmp = (a_n->c-'0') + retenue;
             retenue = tmp / 10;
@@ -292,6 +296,15 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
 }
 
 unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
+    /*
+        @info: 
+            a + b = {
+                * a + b if a, b >= 0;
+                * -(|a| + |b|) if a, b <= 0
+                * a - |b| if a >= 0, b < 0
+                * b - |a| if b >= 0, a < 0
+            }
+    */
     if(a.signe == '*' || b.signe == '*')
         return (unbounded_int){.signe='*'};
     if(unbounded_greater_equal_zero(a) && unbounded_greater_equal_zero(b)) {
@@ -327,6 +340,35 @@ static int unbounded_lesser_equal_zero(unbounded_int a) {
         return 0;
     }
 }
+
+unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b) {
+    /*
+        @info: I think that here I need to have a pointer pointing to a 
+        list of predefined size (a.len + b.len and then I'll need to fill these elements)
+        according to the operations.
+
+        chiffre *numbers = [c0, c1, c2, c3, c4]
+        After finishing the calculations I can connect each of them and add to an unbounded_int.
+        
+    */
+    unbounded_int error = (unbounded_int){.signe='*'};
+    
+    if(a.signe == '*' || b.signe == '*')
+        return error;
+    
+    unbounded_int produitInt = create_new_unbounded_int('+', 0, NULL, NULL);
+    int retenue = 0;
+    chiffre *c_n = NULL, *c_prev_n = NULL, *a_n=a.dernier, *b_n=b.dernier;
+
+    for(; b_n != NULL; b_n = b_n->precedent) {
+        retenue = 0;
+        if(b_n->c == '0') continue;
+        for(; a_n != NULL; a_n = a_n->precedent) {
+            printf("*");
+        } 
+    }
+}
+
 char *unbounded_int2string(unbounded_int i) {
     if(i.signe == '*')
         return NULL;
@@ -360,6 +402,10 @@ static unbounded_int delete_useless_zero(unbounded_int nb) {
     }
     nb.premier = c; // c ne peut pas etre NULL ici.
     return nb;
+}
+static unbounded_int create_new_unbounded_int(char signe, size_t len, chiffre* premier, chiffre* dernier) {
+    unbounded_int result = {.premier = premier, .dernier = dernier, .len = len, .signe = signe};
+    return result;
 }
 
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
