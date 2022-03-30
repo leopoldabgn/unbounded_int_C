@@ -16,7 +16,6 @@ static int unbounded_greater_equal_zero(unbounded_int a);
 static int unbounded_lesser_equal_zero(unbounded_int a);
 static unbounded_int create_new_unbounded_int(char signe, size_t len, chiffre* premier, chiffre* dernier);
 
-
 void print_unbounded_int(unbounded_int u) {
     if(u.signe == '*') {
         puts("ERROR NUMBER");
