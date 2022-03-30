@@ -36,4 +36,6 @@ static int isNumber(const char *e);
 
 static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b);
 static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
+static int unbounded_greater_equal_zero(unbounded_int a);
+static int unbounded_lesser_equal_zero(unbounded_int a);
 #endif

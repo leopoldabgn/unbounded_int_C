@@ -14,8 +14,9 @@ static int isNumber(const char *e);
 static unbounded_int delete_useless_zero(unbounded_int nb);
 
 static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b);
-// static unbounded_int loop_and_add(chiffre* x_n, int retenue, chiffre* x_n_prev, unbounded_int error);
 static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b);
+static int unbounded_greater_equal_zero(unbounded_int a);
+static int unbounded_lesser_equal_zero(unbounded_int a);
 
 int main() {
     /*
@@ -28,8 +29,8 @@ int main() {
     free(str);
     destroy_unbounded_int(u);
     */
-    unbounded_int u1 = string2unbounded_int("0");
-    unbounded_int u2 = string2unbounded_int("19");
+    unbounded_int u1 = string2unbounded_int("-10");
+    unbounded_int u2 = string2unbounded_int("0");
     unbounded_int u3 = ll2unbounded_int(1000);
 
     printf("unbounded_int_cmp_unbounded_int(u1, u2) = %d\n", unbounded_int_cmp_unbounded_int(u1, u2));
@@ -46,7 +47,7 @@ int main() {
     print_unbounded_int(u2);
     
     unbounded_int sub = unbounded_int_difference(u1, u2);
-    unbounded_int som = unbounded_int_somme_aux(u1, u2);
+    unbounded_int som = unbounded_int_somme(u1, u2);
 
     // Je lis dans les deux sens pour verifier que tous
     // les liens precedent/suivant, premier/dernier fonctionne.
@@ -256,13 +257,14 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
         sommeInt.len++;
     }
 
-    if (a.len > b.len) {
+    if (a.len > b.len) { /*@todo: refactor this into a function*/
         for(;a_n != NULL; a_n = a_n->precedent) {
             int tmp = (a_n->c-'0') + retenue;
             retenue = tmp / 10;
             c_n = malloc(sizeof(chiffre));
             if(c_n == NULL) return error;
-            c_n->c = (tmp % 10) + '0';
+            c_n->c 
+            = (tmp % 10) + '0';
             c_n->suivant = c_prev_n;
             c_prev_n->precedent = c_n;
             c_prev_n = c_n;
@@ -289,6 +291,42 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     return sommeInt;
 }
 
+unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
+    if(a.signe == '*' || b.signe == '*')
+        return (unbounded_int){.signe='*'};
+    if(unbounded_greater_equal_zero(a) && unbounded_greater_equal_zero(b)) {
+        return unbounded_int_somme_aux(a, b);
+    }
+    if(unbounded_lesser_equal_zero(a) && unbounded_lesser_equal_zero(b)) {
+        a.signe = '+';
+        b.signe = '+';
+        unbounded_int a_plus_b = unbounded_int_somme_aux(a, b);
+        a_plus_b.signe = '-';
+        return a_plus_b;
+    }
+    if(unbounded_greater_equal_zero(a) && b.signe == '-') {
+        b.signe = '+';
+        return unbounded_int_difference(a, b);
+    }else {
+        a.signe = '+';
+        return unbounded_int_difference(b, a);
+    }
+}
+
+static int unbounded_greater_equal_zero(unbounded_int a) {
+    if(a.signe == '+' || a.premier->c == '0') {
+        return 1;
+    }
+    return 0;
+}
+
+static int unbounded_lesser_equal_zero(unbounded_int a) {
+    if(a.signe == '-' || a.premier->c == '0') {
+        return 1;
+    }else {
+        return 0;
+    }
+}
 char *unbounded_int2string(unbounded_int i) {
     if(i.signe == '*')
         return NULL;
@@ -329,11 +367,11 @@ unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
         return (unbounded_int){.signe='*'};
     if(a.signe == '+' && b.signe == '-') {
         b.signe = '+';
-        return b; // return unbounded_int_somme(a, b);
+        return unbounded_int_somme(a, b); // return unbounded_int_somme(a, b);
     }
     else if(a.signe == '-' && b.signe == '+') {
         a.signe = '+';
-        unbounded_int sum; // = unbounded_int_somme(b, a);
+        unbounded_int sum = unbounded_int_somme(b, a);
         sum.signe = '-';
         return sum;
     }
