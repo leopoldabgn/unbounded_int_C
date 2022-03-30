@@ -2,9 +2,25 @@
 #include <stdio.h>
 #include <string.h>
 
-void help();
-int isInputOption(const char* str);
-int isOutputOption(const char* str);
+#include "unbounded_int.h"
+
+typedef struct variable {
+    char* name;
+    unbounded_int value;
+    struct variable* next;
+    struct variable* previous;
+}variable;
+
+typedef struct {
+    variable* first;
+    variable* last;
+}list;
+
+static void help();
+static int isInputOption(const char* str);
+static int isOutputOption(const char* str);
+void destroy_list(list l);
+void destroy_variable(variable* var);
 
 int main(int argc, char* argv[]) {
     FILE* source  = NULL,
@@ -64,15 +80,31 @@ int main(int argc, char* argv[]) {
     return EXIT_SUCCESS;
 }
 
-int isInputOption(const char* str) {
+static int isInputOption(const char* str) {
     return strcmp(str, "-i") == 0 ? 1 : 0;
 }
 
-int isOutputOption(const char* str) {
+static int isOutputOption(const char* str) {
     return strcmp(str, "-o") == 0 ? 1 : 0;
 }
 
-void help() {
+static void help() {
     puts("Help :");
     puts("\t./calc_unbounded_int -i <source> -o <output>");
+}
+
+void destroy_variable(variable* var) {
+    if(var == NULL)
+        return;
+    free(var->name);
+    destroy_unbounded_int(var->value);
+    free(var);
+}
+
+void destroy_list(list l) {
+    variable* tmp = l.first;
+    for(variable* var=l.first;var != NULL;var=tmp) {
+        tmp = tmp->next;
+        free(var);
+    }
 }
