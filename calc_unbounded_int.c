@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <stddef.h>
 
 #include "unbounded_int.h"
 
@@ -8,7 +10,6 @@ typedef struct variable {
     char* name;
     unbounded_int value;
     struct variable* next;
-    struct variable* previous;
 }variable;
 
 typedef struct {
@@ -21,6 +22,8 @@ static int isInputOption(const char* str);
 static int isOutputOption(const char* str);
 void destroy_list(list l);
 void destroy_variable(variable* var);
+char* getWord(char* line, char delimiter);
+char* readLine(FILE* source);
 
 int main(int argc, char* argv[]) {
     FILE* source  = NULL,
@@ -71,10 +74,24 @@ int main(int argc, char* argv[]) {
     if(output == NULL)
         output = stdout;
 
-    char c;
-    while((c = fgetc(source)) != EOF)
-        printf("%c", c);
-    
+/*
+    char str[60];
+    char* word;
+    while(fgets(str, 60, source) != NULL) {
+        word = getWord(str, ' ');
+        printf("%s", word);
+        free(word);
+    }
+*/
+    char* line;
+    while(!feof(source)) {
+        line = readLine(source);
+        if(line != NULL) {
+            printf("%s\n", line);
+            free(line);
+        }
+    }
+
     fclose(source);
     fclose(output);
     return EXIT_SUCCESS;
@@ -93,6 +110,18 @@ static void help() {
     puts("\t./calc_unbounded_int -i <source> -o <output>");
 }
 
+variable* create_variable(char* name, unbounded_int val) {
+    if(name == NULL || val.signe == '*')
+        return NULL;
+    variable* var = malloc(sizeof(variable));
+    if(var == NULL)
+        return NULL;
+    var->name = name;
+    var->value = val;
+    var->next = NULL;
+    return var;
+}
+
 void destroy_variable(variable* var) {
     if(var == NULL)
         return;
@@ -107,4 +136,67 @@ void destroy_list(list l) {
         tmp = tmp->next;
         free(var);
     }
+}
+
+int isEmpty(list l) {
+    return l.first == NULL;
+}
+
+int add_variable(list l, char* name, unbounded_int val) {
+    variable* var = create_variable(name, val);
+    if(var == NULL)
+        return 0;
+    if(isEmpty(l)) {
+        l.first = var;
+        l.last = var;
+        return 0;
+    }
+    l.last->next = var;
+    l.last = l.last->next;
+    return 0;
+}
+
+variable* get_variable(list l, char* name) {
+    if(name == NULL)
+        return NULL;
+    variable* tmp = l.first;
+    for(;tmp != NULL && strcmp(tmp->name, name) != 0;tmp = tmp->next)
+    ;
+    return tmp;
+}
+
+char* getWord(char* line, char delimiter) {
+    if(line == NULL)
+        return NULL;
+    char* end = strchr(line, delimiter);
+    if(end == NULL)
+        end = strchr(line, '\0');
+    ptrdiff_t size = end - line;
+    char* str = malloc((size+1) * sizeof(char));
+    memmove(str, line, size);
+    str[size] = '\0';
+
+    return str;
+}
+
+char* readLine(FILE* source) {
+    if(source == NULL)
+        return NULL;
+    int i=0, size = 30;
+    char* line = malloc(size * sizeof(char));
+    char c;
+    for(;(c = fgetc(source)) != '\n' && !feof(source);i++) {
+        if(i == size-1) { // On double la taille du buffer
+            char* doubleLine = realloc(line, size * 2 * sizeof(char)); 
+            if(doubleLine == NULL)
+                return NULL;
+            size *= 2;
+            line = doubleLine;
+        }
+        line[i] = c;
+    }
+
+    line[i] = '\0';
+
+    return line;
 }
