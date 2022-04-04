@@ -84,12 +84,11 @@ int main(int argc, char* argv[]) {
     }
 */
     char* line, *word;
-    int index = 0;
     while(!feof(source)) {
         line = readLine(source);
         if(line == NULL)
             continue;
-        while((word = getWord(index, line, ' ')) != NULL) {
+        for(int index=0;(word = getWord(index, line, ' ')) != NULL;) {
             printf("%s ", word);
             index += strlen(word);
             while(line[index] == ' ' && line[index] != '\0')
