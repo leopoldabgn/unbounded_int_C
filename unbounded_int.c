@@ -254,9 +254,11 @@ unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
     if(a.signe == '*' || b.signe == '*')
         return (unbounded_int){.signe='*'};
     if(unbounded_greater_equal_zero(a) && unbounded_greater_equal_zero(b)) {
+        printf("*");
         return unbounded_int_somme_aux(a, b);
     }
     if(unbounded_lesser_equal_zero(a) && unbounded_lesser_equal_zero(b)) {
+        printf("**");
         a.signe = '+';
         b.signe = '+';
         unbounded_int a_plus_b = unbounded_int_somme_aux(a, b);
@@ -264,9 +266,11 @@ unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
         return a_plus_b;
     }
     if(unbounded_greater_equal_zero(a) && b.signe == '-') {
+        printf("***");
         b.signe = '+';
         return unbounded_int_difference(a, b);
     }else {
+        printf("***");
         a.signe = '+';
         return unbounded_int_difference(b, a);
     }
@@ -287,39 +291,56 @@ static int unbounded_lesser_equal_zero(unbounded_int a) {
     }
 }
 
-// unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b) {
-//     /*
-//         @info: I think that here I need to have a pointer pointing to a 
-//         list of predefined size (a.len + b.len and then I'll need to fill these elements)
-//         according to the operations.
+unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b) {
+    /*
+        @info: I think that here I need to have a pointer pointing to a 
+        list of predefined size (a.len + b.len and then I'll need to fill these elements)
+        according to the operations.
 
-//         chiffre *numbers = [c0, c1, c2, c3, c4]
-//         After finishing the calculations I can connect each of them and add to an unbounded_int.
+        chiffre *numbers = [c0, c1, c2, c3, c4]
+        After finishing the calculations I can connect each of them and add to an unbounded_int.
         
-//         Something like; c_0->precend  = c1; c1->precedent = c2 . . . 
+        Something like; c_0->precend  = c1; c1->precedent = c2 . . . 
 
-//         unbounded_int x, where x.premier = *numbers[(a.len + b.len)-1]
-//         x.dernier = *numbers[0]; etc.
+        unbounded_int x, where x.premier = *numbers[(a.len + b.len)-1]
+        x.dernier = *numbers[0]; etc.
+
+        @todo: convert ints in array  to unbounded_int.
         
-//     */
-//     unbounded_int error = (unbounded_int){.signe='*'};
+    */
+    unbounded_int error = (unbounded_int){.signe='*'};
+    if(a.signe == '*' || b.signe == '*')
+        return error;
     
-//     if(a.signe == '*' || b.signe == '*')
-//         return error;
-    
-//     unbounded_int produitInt = create_new_unbounded_int('+', 0, NULL, NULL);
-//     int retenue = 0;
-//     chiffre *c_n = NULL, *c_prev_n = NULL, *a_n=a.dernier, *b_n=b.dernier;
+    unbounded_int produitInt = create_new_unbounded_int('+', 0, NULL, NULL);
 
-//     for(; b_n != NULL; b_n = b_n->precedent) {
-//         retenue = 0;
-//         if(b_n->c == '0') continue;
-//         for(; a_n != NULL; a_n = a_n->precedent) {
-//             printf("*");
-//         } 
-//     }
-//     return error;
-// }
+    int retenue = 0;
+    int a_counter = 0;
+    int b_counter = 0;
+
+    int *numbers = calloc(a.len+b.len, sizeof(int));
+    if(numbers == NULL) return error; 
+    chiffre *c_n = NULL, *a_n=a.dernier, *b_n=b.dernier;
+
+    for(; b_n != NULL; b_n = b_n->precedent) {
+        retenue = 0;
+        if(b_n->c == '0') continue;
+        for(; a_n != NULL; a_n = a_n->precedent) {
+            int v = (int) numbers[a_counter+b_counter] + ((int) a_n->c * (int) b_n->c) + retenue;
+            numbers[a_counter+b_counter] = v % 10;
+            retenue = v / 10;
+            a_counter++;
+        } 
+        numbers[b_counter+a.len] = retenue;
+        b_counter++;
+    }
+
+    for(int i=(a.len+b.len)-1; i>=0; i--) {
+        printf("%d", numbers[i]);
+    }
+    printf("\n");
+    return error;
+}
 
 char *unbounded_int2string(unbounded_int i) {
     if(i.signe == '*')
@@ -355,6 +376,7 @@ static unbounded_int delete_useless_zero(unbounded_int nb) {
     nb.premier = c; // c ne peut pas etre NULL ici.
     return nb;
 }
+
 static unbounded_int create_new_unbounded_int(char signe, size_t len, chiffre* premier, chiffre* dernier) {
     unbounded_int result = {.premier = premier, .dernier = dernier, .len = len, .signe = signe};
     return result;
