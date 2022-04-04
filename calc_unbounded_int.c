@@ -22,7 +22,7 @@ static int isInputOption(const char* str);
 static int isOutputOption(const char* str);
 void destroy_list(list l);
 void destroy_variable(variable* var);
-char* getWord(char* line, char delimiter);
+char* getWord(int begin, char* line, char delimiter);
 char* readLine(FILE* source);
 
 int main(int argc, char* argv[]) {
@@ -83,13 +83,21 @@ int main(int argc, char* argv[]) {
         free(word);
     }
 */
-    char* line;
+    char* line, *word;
+    int index = 0;
     while(!feof(source)) {
         line = readLine(source);
-        if(line != NULL) {
-            printf("%s\n", line);
-            free(line);
+        if(line == NULL)
+            continue;
+        while((word = getWord(index, line, ' ')) != NULL) {
+            printf("%s ", word);
+            index += strlen(word);
+            while(line[index] == ' ' && line[index] != '\0')
+                index++;
+            free(word);
         }
+        puts("");
+        free(line);
     }
 
     fclose(source);
@@ -165,15 +173,16 @@ variable* get_variable(list l, char* name) {
     return tmp;
 }
 
-char* getWord(char* line, char delimiter) {
-    if(line == NULL)
+char* getWord(int begin, char* line, char delimiter) {
+    if(line == NULL || begin < 0 || begin >= strlen(line))
         return NULL;
-    char* end = strchr(line, delimiter);
+    char* pos = line + begin;
+    char* end = strchr(pos, delimiter);
     if(end == NULL)
-        end = strchr(line, '\0');
-    ptrdiff_t size = end - line;
+        end = strchr(pos, '\0');
+    ptrdiff_t size = end - pos;
     char* str = malloc((size+1) * sizeof(char));
-    memmove(str, line, size);
+    memmove(str, pos, size);
     str[size] = '\0';
 
     return str;

@@ -450,8 +450,9 @@ static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int
         cSub = malloc(sizeof(chiffre));
         if(cSub == NULL)
             return error;
-        cSub->c = pa->c + r;
-        r=0;
+        sub = (pa->c-'0') + r;
+        r = sub < 0 ? -1 : 0;
+        cSub->c = sub < 0 ? (sub+10)+'0' : sub+'0';
         cSub->suivant = prev; // prev peut etre NULL
         if(prev != NULL)
             prev->precedent = cSub;

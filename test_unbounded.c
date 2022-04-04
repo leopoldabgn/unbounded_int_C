@@ -14,8 +14,8 @@ int main() {
     free(str);
     destroy_unbounded_int(u);
     */
-    unbounded_int u1 = string2unbounded_int("6");
-    unbounded_int u2 = string2unbounded_int("5");
+    unbounded_int u1 = string2unbounded_int("1000");
+    unbounded_int u2 = string2unbounded_int("9");
     unbounded_int u3 = ll2unbounded_int(1000);
 
     printf("unbounded_int_cmp_unbounded_int(u1, u2) = %d\n", unbounded_int_cmp_unbounded_int(u1, u2));
