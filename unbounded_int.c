@@ -155,15 +155,20 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         @bug: cas où a, b < 0!
     */
 
-   if (a.signe == '+' && b.signe == '-') return 1;
-   if (b.signe == '+' && a.signe == '-') return -1;
+    if (a.signe == '+' && b.signe == '-') return 1;
+    if (b.signe == '+' && a.signe == '-') return -1;
 
-   if(a.len > b.len) return 1;
-   if(a.len < b.len) return -1;
+    // merci @leo!
+    int sign = a.signe == '+' ? 1 : -1;
+
+    if(a.len > b.len)
+        return sign;   
+    if(a.len < b.len)
+        return -sign;
 
     for(chiffre *n_a= a.premier, *n_b = b.premier; n_a != NULL && n_b != NULL; n_a=n_a->suivant, n_b = n_b->suivant) {
-        if(n_a->c > n_b->c) return 1;
-        if(n_a->c < n_b->c) return -1;
+        if(n_a->c > n_b->c) return sign;
+        if(n_a->c < n_b->c) return -sign;
     }
     return 0;
 }
@@ -263,11 +268,9 @@ unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
     if(a.signe == '*' || b.signe == '*')
         return (unbounded_int){.signe='*'};
     if(unbounded_greater_equal_zero(a) && unbounded_greater_equal_zero(b)) {
-        printf("*");
         return unbounded_int_somme_aux(a, b);
     }
     if(unbounded_lesser_equal_zero(a) && unbounded_lesser_equal_zero(b)) {
-        printf("**");
         a.signe = '+';
         b.signe = '+';
         unbounded_int a_plus_b = unbounded_int_somme_aux(a, b);
@@ -275,11 +278,9 @@ unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
         return a_plus_b;
     }
     if(unbounded_greater_equal_zero(a) && b.signe == '-') {
-        printf("***");
         b.signe = '+';
         return unbounded_int_difference(a, b);
     }else {
-        printf("***");
         a.signe = '+';
         return unbounded_int_difference(b, a);
     }
