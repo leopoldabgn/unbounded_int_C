@@ -14,8 +14,8 @@ int main() {
     free(str);
     destroy_unbounded_int(u);
     */
-    unbounded_int u1 = string2unbounded_int("6");
-    unbounded_int u2 = string2unbounded_int("5");
+    unbounded_int u1 = string2unbounded_int("500045421444");
+    unbounded_int u2 = string2unbounded_int("-325154544");
     unbounded_int u3 = ll2unbounded_int(1000);
 
     printf("unbounded_int_cmp_unbounded_int(u1, u2) = %d\n", unbounded_int_cmp_unbounded_int(u1, u2));
@@ -33,6 +33,7 @@ int main() {
     
     unbounded_int sub = unbounded_int_difference(u1, u2);
     unbounded_int som = unbounded_int_somme(u1, u2);
+    
 
     // Je lis dans les deux sens pour verifier que tous
     // les liens precedent/suivant, premier/dernier fonctionne.
@@ -44,11 +45,18 @@ int main() {
     print_unbounded_int_left(sub);
     print_unbounded_int_left(som);
 
+    printf("Produit: \n");
+    unbounded_int prod = unbounded_int_produit(u1, u2);
+    print_unbounded_int(prod);
+
+
     destroy_unbounded_int(sub);
     destroy_unbounded_int(som);
     destroy_unbounded_int(u1);
     destroy_unbounded_int(u2);
     destroy_unbounded_int(u3);
+    destroy_unbounded_int(prod);
+
 
     return EXIT_SUCCESS;
 }
