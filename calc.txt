@@ -1,4 +1,6 @@
-a=5
-b     = 3
-print      a
-print    b
+a = 5
+b    = 189
+c =     -666
+print a
+print     b
+    print    c

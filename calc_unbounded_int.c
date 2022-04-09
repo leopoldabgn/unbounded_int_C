@@ -14,16 +14,31 @@ typedef struct variable {
 
 typedef struct {
     variable* first;
-    variable* last;
 }list;
 
 static void help();
 static int isInputOption(const char* str);
 static int isOutputOption(const char* str);
-void destroy_list(list l);
+void destroy_list(list* l);
 void destroy_variable(variable* var);
-char* getWord(int begin, char* line, char delimiter);
+variable* create_variable(char* name, unbounded_int val);
+variable* get_variable(list* l, char* name);
+variable* add_variable(list* l, char* name, char* val);
+int affect_var(variable* v, char* str);
+char* nextWord(int begin, char* line, char delimiter);
 char* readLine(FILE* source);
+
+/*
+////////////////////////////////////////////////////////////////////
+ftell(SEEK_END)
+et fseek pour recuperer directement le nombre d'octet d'un fichier
+et donc recuperer sa taille.
+On peut alors allouer directement un buffer à la bonne taille.
+On pourrait donc rempalcer la methode ou je lis au fur et a mesure
+le fichier et ou je fais des realloc de temps en temps
+////////////////////////////////////////////////////////////////////
+
+*/
 
 int main(int argc, char* argv[]) {
     FILE* source  = NULL,
@@ -69,8 +84,10 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if(source == NULL)
+    if(source == NULL) {
         source = stdin;
+        printf("(Press Ctrl+D to stop the program)\n");
+    }
     if(output == NULL)
         output = stdout;
 
@@ -83,21 +100,57 @@ int main(int argc, char* argv[]) {
         free(word);
     }
 */
-    char* line, *word;
+    list l = {.first = NULL};
+    char* line, *word = NULL, *lastWord = NULL;
+    variable* var;
     while(!feof(source)) {
         line = readLine(source);
         if(line == NULL)
             continue;
-        for(int index=0;(word = getWord(index, line, ' ')) != NULL;) {
-            printf("%s ", word);
+        for(int index=0;(word = nextWord(index, line, ' ')) != NULL;) {
+            // On se decalle pour recuperer le prochain mot.
             index += strlen(word);
             while(line[index] == ' ' && line[index] != '\0')
                 index++;
-            free(word);
+            
+            if(lastWord != NULL && strcmp(lastWord, "print") == 0) {
+                var = get_variable(&l, word);
+                if(var != NULL) {
+                    printf("%s -> ", var->name);
+                    print_unbounded_int(var->value);
+                }
+                else {
+                    printf("ERROR: cannot print variable\n");
+                    return EXIT_FAILURE;
+                }
+            }
+            // should be "contains ="
+            else if(lastWord != NULL && strcmp(word, "=") == 0) {
+                var = get_variable(&l, lastWord);
+                if(var == NULL)
+                    var = add_variable(&l, lastWord, "0");
+                affect_var(var, line+index);
+                free(word); // lastWord sera free a la sortie du for.
+                break;
+            }
+            else {
+
+            }
+
+            if(lastWord != NULL)
+                free(lastWord);
+
+            lastWord = word;
         }
-        puts("");
+        if(lastWord != NULL) {
+            free(lastWord);
+            lastWord = NULL;
+        }
+        //puts("");
         free(line);
     }
+    
+    destroy_list(&l);
 
     fclose(source);
     fclose(output);
@@ -117,13 +170,39 @@ static void help() {
     puts("\t./calc_unbounded_int -i <source> -o <output>");
 }
 
+// str est la chaine apres le '='
+int affect_var(variable* v, char* str) {
+    if(str == NULL || *str == '\0' || v == NULL)
+        return 1;
+    int index = 0;
+    while(str[index] == ' ' && str[index] != '\0')
+        index++;
+    char* val = nextWord(index, str, ' '); // ' ' ou '\0'
+    if(val == NULL)
+        return 1;
+    unbounded_int u1 = v->value;
+    unbounded_int u2 = string2unbounded_int(val);
+    free(val);
+    unbounded_int sum = unbounded_int_somme(u1, u2);
+    destroy_unbounded_int(u1);
+    destroy_unbounded_int(u2);
+    v->value = sum;
+    return 0;
+}
+
 variable* create_variable(char* name, unbounded_int val) {
     if(name == NULL || val.signe == '*')
         return NULL;
     variable* var = malloc(sizeof(variable));
     if(var == NULL)
         return NULL;
-    var->name = name;
+    char* n = malloc(sizeof(char)*(strlen(name)+1));
+    if(n == NULL) {
+        free(var);
+        return NULL;
+    }
+    strcpy(n, name);
+    var->name = n;
     var->value = val;
     var->next = NULL;
     return var;
@@ -137,42 +216,46 @@ void destroy_variable(variable* var) {
     free(var);
 }
 
-void destroy_list(list l) {
-    variable* tmp = l.first;
-    for(variable* var=l.first;var != NULL;var=tmp) {
+void destroy_list(list* l) {
+    variable* tmp = l->first;
+    for(variable* var=l->first;var != NULL;var=tmp) {
         tmp = tmp->next;
-        free(var);
+        destroy_variable(var);
     }
 }
 
-int isEmpty(list l) {
-    return l.first == NULL;
+int isEmpty(list* l) {
+    return l->first == NULL;
 }
 
-int add_variable(list l, char* name, unbounded_int val) {
-    variable* var = create_variable(name, val);
-    if(var == NULL)
-        return 0;
+variable* add_variable(list* l, char* name, char* val) {
+    if(l == NULL || name == NULL || val == NULL)
+        return NULL;
+    unbounded_int u = string2unbounded_int(val);
+    variable* var = create_variable(name, u);
+    if(var == NULL) {
+        destroy_unbounded_int(u);
+        return NULL;
+    }
     if(isEmpty(l)) {
-        l.first = var;
-        l.last = var;
-        return 0;
+        l->first = var;
+        return var;
     }
-    l.last->next = var;
-    l.last = l.last->next;
-    return 0;
+    var->next = l->first;
+    l->first = var;
+    return var;
 }
 
-variable* get_variable(list l, char* name) {
+variable* get_variable(list* l, char* name) {
     if(name == NULL)
         return NULL;
-    variable* tmp = l.first;
+    variable* tmp = l->first;
     for(;tmp != NULL && strcmp(tmp->name, name) != 0;tmp = tmp->next)
     ;
     return tmp;
 }
 
-char* getWord(int begin, char* line, char delimiter) {
+char* nextWord(int begin, char* line, char delimiter) {
     if(line == NULL || begin < 0 || begin >= strlen(line))
         return NULL;
     char* pos = line + begin;
@@ -183,7 +266,7 @@ char* getWord(int begin, char* line, char delimiter) {
     char* str = malloc((size+1) * sizeof(char));
     memmove(str, pos, size);
     str[size] = '\0';
-
+    
     return str;
 }
 
