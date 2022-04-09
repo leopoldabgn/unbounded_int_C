@@ -30,5 +30,6 @@ unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b);
 void print_unbounded_int(unbounded_int u);
 void print_unbounded_int_left(unbounded_int u);
 void destroy_unbounded_int(unbounded_int u);
+unbounded_int calculate(unbounded_int a, char op, unbounded_int b);
 
 #endif

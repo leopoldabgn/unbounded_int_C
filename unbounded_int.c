@@ -16,6 +16,7 @@ static int unbounded_greater_equal_zero(unbounded_int a);
 static int unbounded_lesser_equal_zero(unbounded_int a);
 static unbounded_int unbounded_int_produit_aux(unbounded_int a, unbounded_int b);
 
+
 void print_unbounded_int(unbounded_int u) {
     if(u.signe == '*') {
         puts("ERROR NUMBER");
@@ -488,4 +489,17 @@ static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int
     subInt.premier->precedent = NULL;
 
     return delete_useless_zero(subInt);;
+}
+
+unbounded_int calculate(unbounded_int a, char op, unbounded_int b) {
+    switch(op) {
+        case '+':
+            return unbounded_int_somme(a, b);
+        case '-':
+            return unbounded_int_difference(a, b);
+        case '*':
+            return unbounded_int_produit(a, b);
+        default:
+            return (unbounded_int){.signe='*'};
+    }
 }
