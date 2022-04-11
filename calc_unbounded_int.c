@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
     }
 */
     list l = {.first = NULL};
-    char* line, *word = NULL, *lastWord = NULL;
+    char* line, *word = NULL, *lastWord = NULL, *uStr;
     variable* var;
     while(!feof(source)) {
         line = readLine(source);
@@ -113,11 +113,13 @@ int main(int argc, char* argv[]) {
             while(line[index] == ' ' && line[index] != '\0')
                 index++;
             
+            // PRINT
             if(lastWord != NULL && strcmp(lastWord, "print") == 0) {
                 var = get_variable(&l, word);
                 if(var != NULL) {
-                    printf("%s -> ", var->name);
-                    print_unbounded_int(var->value);
+                    uStr = unbounded_int2string(var->value);
+                    fprintf(output, "%s -> %s\n", var->name, uStr);
+                    free(uStr);
                 }
                 else {
                     printf("ERROR: cannot print variable\n");
