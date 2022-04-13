@@ -27,6 +27,7 @@ variable* add_variable(list* l, char* name, char* val);
 int affect_var(variable* v, char* str);
 char* nextWord(int begin, char* line, char delimiter);
 char* readLine(FILE* source);
+static int indexOf(const char* str, char elt);
 
 /*
 ////////////////////////////////////////////////////////////////////
@@ -86,20 +87,11 @@ int main(int argc, char* argv[]) {
 
     if(source == NULL) {
         source = stdin;
-        printf("(Press Ctrl+D to stop the program)\n");
+        puts("(Press Ctrl+D to stop the program)");
     }
     if(output == NULL)
         output = stdout;
 
-/*
-    char str[60];
-    char* word;
-    while(fgets(str, 60, source) != NULL) {
-        word = getWord(str, ' ');
-        printf("%s", word);
-        free(word);
-    }
-*/
     list l = {.first = NULL};
     char* line, *word = NULL, *lastWord = NULL, *uStr;
     variable* var;
@@ -108,11 +100,6 @@ int main(int argc, char* argv[]) {
         if(line == NULL)
             continue;
         for(int index=0;(word = nextWord(index, line, ' ')) != NULL;) {
-            // On se decalle pour recuperer le prochain mot.
-            index += strlen(word);
-            while(line[index] == ' ' && line[index] != '\0')
-                index++;
-            
             // PRINT
             if(lastWord != NULL && strcmp(lastWord, "print") == 0) {
                 var = get_variable(&l, word);
@@ -126,18 +113,43 @@ int main(int argc, char* argv[]) {
                     return EXIT_FAILURE;
                 }
             }
-            // should be "contains ="
-            else if(lastWord != NULL && strcmp(word, "=") == 0) {
-                var = get_variable(&l, lastWord);
-                if(var == NULL)
-                    var = add_variable(&l, lastWord, "0");
-                affect_var(var, line+index);
-                free(word); // lastWord sera free a la sortie du for.
-                break;
-            }
             else {
+                // On verifie si word contient un egal '='
+                // Si c'est le cas, on recupere l'index du egal
+                int equalIndex = indexOf(word, '=');
+                if(equalIndex != -1) {
+                    // Dans ce cas, on un '=' au debut de word.
+                    // suivi d'une affection, colle ou non au symbole egal
+                    // ex: "=-7823", "=  9876", "=   a * 88"
+                    if(equalIndex == 0 && lastWord != NULL) { // La variable a affecter est normalement deja stocke dans lastWord
+                        var = get_variable(&l, lastWord);
+                        if(var == NULL)
+                            var = add_variable(&l, lastWord, "0");
+                    }
+                    // Dans ce cas, on a :
+                    // - une variable
+                    // - Puis un '=' colle a la variable
+                    // Par exemple : "a=", "abab=  8" ou encore "var=   b   * c"
+                    else {
+                        // On place temporairement un '\0' a la place du egal
+                        word[equalIndex] = '\0';
+                        var = get_variable(&l, word);
+                        if(var == NULL)
+                            var = add_variable(&l, word, "0");
+                        // On replace le '='
+                        word[equalIndex] = '=';
+                    }
+                    affect_var(var, (line+index)+equalIndex+1); // line+index+equalIndex+1 car on passe ce qu'il y a apres le egal
 
+                    free(word); // lastWord sera free (si besoin) a la sortie du for.
+                    break;
+                }
             }
+
+            // On se decalle pour recuperer le prochain mot.
+            index += strlen(word);
+            while(line[index] == ' ' && line[index] != '\0')
+                index++;
 
             if(lastWord != NULL)
                 free(lastWord);
@@ -146,7 +158,7 @@ int main(int argc, char* argv[]) {
         }
         if(lastWord != NULL) {
             free(lastWord);
-            lastWord = NULL;
+            lastWord = NULL; // Important. Peut faire bugger le prgm au prochain tour de boucle
         }
         //puts("");
         free(line);
@@ -182,6 +194,7 @@ int affect_var(variable* v, char* str) {
     char* val = nextWord(index, str, ' '); // ' ' ou '\0'
     if(val == NULL)
         return 1;
+    /* Whoops... Forget this...
     unbounded_int u1 = v->value;
     unbounded_int u2 = string2unbounded_int(val);
     free(val);
@@ -189,6 +202,15 @@ int affect_var(variable* v, char* str) {
     destroy_unbounded_int(u1);
     destroy_unbounded_int(u2);
     v->value = sum;
+    */
+    unbounded_int u = string2unbounded_int(val);
+    free(val);
+    if(u.signe == '*') // Si il y a un probleme a la creation de l'unbounded_int
+        return 1;
+    // On free l'ancien unbounded_int relie a la variable v
+    destroy_unbounded_int(v->value);
+    // On set la nouvelle valeur de v->value
+    v->value = u;
     return 0;
 }
 
@@ -203,7 +225,7 @@ variable* create_variable(char* name, unbounded_int val) {
         free(var);
         return NULL;
     }
-    strcpy(n, name);
+    strcpy(n, name); // strcpy copie egalement le caractere null '\0'
     var->name = n;
     var->value = val;
     var->next = NULL;
@@ -292,4 +314,15 @@ char* readLine(FILE* source) {
     line[i] = '\0';
 
     return line;
+}
+
+static int indexOf(const char* str, char elt) {
+    if(str == NULL)
+        return -1;
+    int index = 0;
+    char* ptr = (char*)str;
+    for(;*ptr != elt && *ptr != '\0';ptr++, index++)
+        ;
+    
+    return *ptr == '\0' ? -1 : index;
 }

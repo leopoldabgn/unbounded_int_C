@@ -1,6 +1,13 @@
-a = 5
-b    = 189
-c =     -666
+a= 05
+b = 189
+c      =-666
+d=-987970987
+e=      0000987
+
 print a
+
 print     b
     print    c
+
+print d
+   print    e
