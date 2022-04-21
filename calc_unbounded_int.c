@@ -24,10 +24,14 @@ void destroy_variable(variable* var);
 variable* create_variable(char* name, unbounded_int val);
 variable* get_variable(list* l, char* name);
 variable* add_variable(list* l, char* name, char* val);
-int affect_var(variable* v, char* str);
+int affect_var(variable* v, char* str, list* l);
 char* nextWord(int begin, char* line, char delimiter);
 char* readLine(FILE* source);
 static int indexOf(const char* str, char elt);
+static unbounded_int compute_with_variables(char* str, list* l);
+static unbounded_int get_unbounded(char* x, list *l);
+
+
 
 /*
 ////////////////////////////////////////////////////////////////////
@@ -42,6 +46,11 @@ le fichier et ou je fais des realloc de temps en temps
 */
 
 int main(int argc, char* argv[]) {
+
+    char* string = "5 * 5";
+    unbounded_int x = compute_with_variables(string, NULL);
+    // print_unbounded_int(x);
+
     FILE* source  = NULL,
           *output = NULL;
 
@@ -139,7 +148,7 @@ int main(int argc, char* argv[]) {
                         // On replace le '='
                         word[equalIndex] = '=';
                     }
-                    affect_var(var, (line+index)+equalIndex+1); // line+index+equalIndex+1 car on passe ce qu'il y a apres le egal
+                    affect_var(var, (line+index)+equalIndex+1, &l); // line+index+equalIndex+1 car on passe ce qu'il y a apres le egal
 
                     free(word); // lastWord sera free (si besoin) a la sortie du for.
                     break;
@@ -185,7 +194,7 @@ static void help() {
 }
 
 // str est la chaine apres le '='
-int affect_var(variable* v, char* str) {
+int affect_var(variable* v, char* str, list* l) {
     if(str == NULL || *str == '\0' || v == NULL)
         return 1;
     int index = 0;
@@ -212,6 +221,63 @@ int affect_var(variable* v, char* str) {
     // On set la nouvelle valeur de v->value
     v->value = u;
     return 0;
+}
+
+
+static unbounded_int compute_with_variables(char* str, list* l) {
+/*  
+
+    @param str: a char pointer. 
+    @return unbounded_int: result from an arithmetic operation between two numbers.
+
+    This function compute the result of an arithmetic operation between two variables.
+    It reads all the words separeted by the delimeter. We expect to find something of the type: 7
+    5+5, 5-5,  5*5 or the same
+    but using variables
+
+*/
+
+    int size = strlen(str);
+    char copy_str[size];
+
+    strcpy(copy_str, str);
+    char delim[] = " ";
+
+    char* a = strtok(copy_str, delim);
+    char signe = strtok(NULL, delim)[0];
+    char* b = strtok(NULL, delim);
+
+    printf("%s %c %s", a, signe, b);
+
+    unbounded_int n1 = get_unbounded(a, l);
+    unbounded_int n2 = get_unbounded(b, l);
+    unbounded_int res;
+
+    switch (signe) {
+        case '+':
+            res = unbounded_int_somme(n1, n2);
+            break;
+        case '-':
+            res = unbounded_int_difference(n1, n2);
+            break;
+        case '*':
+            res = unbounded_int_produit(n1, n2);
+            break;
+    }
+    return res;
+}
+
+static unbounded_int get_unbounded(char* x, list* l) {
+    unbounded_int n1;
+
+    if(isalpha(x) && l!= NULL) { // BUG HERE -> segmentation fault!!!!
+        // variable *z = get_variable(l, x);
+        // n1 = z->value;
+    }else{
+        // n1 = string2unbounded_int(x);
+    }
+
+    return n1;
 }
 
 variable* create_variable(char* name, unbounded_int val) {
