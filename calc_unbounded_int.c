@@ -349,6 +349,8 @@ static unbounded_int compute_with_variables(char* str, list* l) {
     res = calculate(n1, signe, n2);
     // print_unbounded_int(res);
     free(copy_str);
+    destroy_unbounded_int(n1);
+    destroy_unbounded_int(n2);
 
     return res;
 }
