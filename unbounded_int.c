@@ -503,3 +503,10 @@ unbounded_int calculate(unbounded_int a, char op, unbounded_int b) {
             return (unbounded_int){.signe='*'};
     }
 }
+
+unbounded_int unbounded_int_copy(unbounded_int u) {
+    unbounded_int zero = string2unbounded_int("0");
+    unbounded_int res = unbounded_int_somme(u, zero);
+    destroy_unbounded_int(zero);
+    return res;
+}

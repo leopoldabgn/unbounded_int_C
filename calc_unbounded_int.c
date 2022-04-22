@@ -354,7 +354,7 @@ static unbounded_int get_unbounded(char* x, list* l) {
     
     if(isalpha(c) && l!= NULL) {
         variable *z = get_variable(l, x);
-        n1 = z->value;
+        n1 = unbounded_int_copy(z->value);
     }else{
         n1 = string2unbounded_int(x);
     }

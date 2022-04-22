@@ -1,6 +1,6 @@
 a= 05
-b = 189
-c      =-666
+b = a * 2
+c      = a + 10
 d=-987970987
 e=      0000987
 
@@ -8,6 +8,7 @@ print a
 
 print     b
     print    c
-
+    c = c * c
+  print     c
 print d
    print    e
