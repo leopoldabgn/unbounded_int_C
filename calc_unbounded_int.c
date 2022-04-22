@@ -322,6 +322,11 @@ static unbounded_int compute_with_variables(char* str, list* l) {
     int size = strlen(str);
     char* copy_str = malloc(sizeof(char) * (size + 1));
 
+    if(copy_str == NULL) {
+        perror("[LOG]: compute_with_variables(): copy_str is null");
+        exit(1);
+    }
+        
     assert(copy_str != NULL);
     strcpy(copy_str, str);
 
@@ -354,7 +359,8 @@ static unbounded_int get_unbounded(char* x, list* l) {
     
     if(isalpha(c) && l!= NULL) {
         variable *z = get_variable(l, x);
-        n1 = unbounded_int_copy(z->value);
+        if(z != NULL) 
+            n1 = unbounded_int_copy(z->value);
     }else{
         n1 = string2unbounded_int(x);
     }
