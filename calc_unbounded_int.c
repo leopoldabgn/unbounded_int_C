@@ -122,6 +122,7 @@ int main(int argc, char* argv[]) {
     list l = {.first = NULL};
     char* line, *word = NULL, *lastWord = NULL, *uStr;
     variable* var;
+    
     while(!feof(source)) {
         line = readLine(source);
         if(line == NULL)
@@ -132,12 +133,11 @@ int main(int argc, char* argv[]) {
                 var = get_variable(&l, word);
                 if(var != NULL) {
                     uStr = unbounded_int2string(var->value);
-                    fprintf(output, "%s -> %s\n", var->name, uStr);
+                    fprintf(output, "%s = %s\n", var->name, uStr);
                     free(uStr);
                 }
                 else {
-                    printf("ERROR: cannot print variable\n");
-                    return EXIT_FAILURE;
+                    fprintf(output, "%s = 0\n", word);
                 }
             }
             else {
@@ -453,12 +453,12 @@ char* nextWord(int begin, char* line, char delimiter) {
 char* readLine(FILE* source) {
     if(source == NULL)
         return NULL;
-    int i=0, size = 30;
+    int i=0, size = 12;
     char* line = malloc(size * sizeof(char));
     char c;
     for(;(c = fgetc(source)) != '\n' && !feof(source);i++) {
         if(i == size-1) { // On double la taille du buffer
-            char* doubleLine = realloc(line, size * 2 * sizeof(char)); 
+            char* doubleLine = realloc(line, size * 2 * sizeof(char));
             if(doubleLine == NULL)
                 return NULL;
             size *= 2;
