@@ -1,8 +1,12 @@
+# This is temporary. Modifications are still required.
+CC=gcc
+CFLAGS=-Wall -pedantic -g
+
+test_unbounded: test_unbounded.c
+	$(CC) $(CFLAGS) -o $@ unbounded_int.c $<
+calc: calc_unbounded_int.c
+	$(CC) $(CFLAGS) -o $@ unbounded_int.c $<
 clean:
 	rm -f prog *.o
 	rm -f test_unbounded
-	rm -f calc_unbounded_int
-test_unbounded: test_unbounded.c
-	gcc -Wall -g -pedantic unbounded_int.c test_unbounded.c -o test_unbounded
-calc: calc_unbounded_int.c
-	gcc -Wall -g -pedantic unbounded_int.c calc_unbounded_int.c -o calc_unbounded_int
+	rm -f calc
