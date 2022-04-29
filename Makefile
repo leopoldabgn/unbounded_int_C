@@ -21,7 +21,7 @@ message:
 
 calc_unbounded_int: calc_unbounded_int.o unbounded_int.o
 	sleep 0.25
-	printf "[LOG]: Creating test_unbounded"
+	printf "[LOG]: Creating calc_unbounded"
 	sleep 0.25
 	printf "."
 	sleep 0.25
