@@ -22,7 +22,8 @@ void print_unbounded_int(unbounded_int u) {
         puts("ERROR NUMBER");
         return;
     }
-    printf("%c", u.signe);
+    if(u.signe == '-')
+        printf("%c", u.signe);
     for(chiffre* c=u.premier;c != NULL;c=c->suivant) {
         printf("%c", c->c);
     }
