@@ -22,6 +22,7 @@ static int calc(int a, char op, int b) {
     }
 }
 
+// On teste la plupart des fonctions ici
 static void test_unbounded_operations() {
     int val1[] = {-1, 0, 1, 10, -10, 600, 999, -9999};
     int val2[] = {6, 120, -12, 20, -16, -100, 1, -1};
@@ -31,6 +32,8 @@ static void test_unbounded_operations() {
     int s2 = sizeof(ops) / sizeof(ops[0]);
 
     unbounded_int a, b, res;
+    int res2;
+    char* buffer;
 
     for(int i=0;i<s1;i++) {
         printf("[LOG] Test #%d :\n\n", i+1);
@@ -38,7 +41,7 @@ static void test_unbounded_operations() {
         b = ll2unbounded_int(val2[i]);
 
         printf("COMPARAISONS : %d et %d\n\n", val1[i], val2[i]);
-        printf("unbounded_int : %d\n", unbounded_int_cmp_unbounded_int(a, b));
+        printf("unbounded_int : %d  %d\n", unbounded_int_cmp_unbounded_int(a, b), unbounded_int_cmp_ll(a, val2[i]));
         printf("          int : %d\n\n", cmp(val1[i], val2[i]));
 
         for(int j=0;j<s2;j++) {
@@ -46,16 +49,44 @@ static void test_unbounded_operations() {
 
             res = calculate(a, ops[j], b);
             printf("\nunbounded_int : ");
-            print_unbounded_int(res);
-            printf("          int : %d\n\n", calc(val1[i], ops[j], val2[i]));
+            buffer = unbounded_int2string(res);
+            printf("%s\n", buffer);
+            free(buffer);
+            res2 = calc(val1[i], ops[j], val2[i]);
+            printf("          int : %d\n\n", res2);
 
+            if(unbounded_int_cmp_ll(res, res2) == 0)
+                puts("----- TEST [OK] -----\n");
+            else
+                puts("----- TEST [ERREUR] -----\n");
+            
             destroy_unbounded_int(res);
         }
 
         destroy_unbounded_int(a);
         destroy_unbounded_int(b);
     }
-
+    char* str1[] = {"1000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                    "9999999999999999999999999999999999999999999999999999999999999999999999999999999"};
+    char* str2[] = {"9000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                    "1"};
+    s1 = sizeof(str1) / sizeof(str1[0]);
+    printf("SIZEEE : %d\n", s1);
+    for(int i=0;i<s1;i++) {
+        a = string2unbounded_int(str1[i]);
+        b = string2unbounded_int(str2[i]);
+        for(int j=0;j<s2;j++) {
+            printf("CALCUL :\n%s\n%c\n%s\n", str1[i], ops[j], str2[i]);
+            res = calculate(a, ops[j], b);
+            printf("\nunbounded_int :\n");
+            buffer = unbounded_int2string(res);
+            printf("%s\n\n", buffer);
+            free(buffer);
+            destroy_unbounded_int(res);
+        }
+        destroy_unbounded_int(a);
+        destroy_unbounded_int(b);
+    }
 }
 
 int main() {
@@ -120,7 +151,7 @@ int main() {
     destroy_unbounded_int(u3);
     destroy_unbounded_int(prod);
     printf("\n");
-    printf("\t\t[LOG]: Finished");
+    printf("\t\t[LOG]: Finished\n");
 
     return EXIT_SUCCESS;
 }
