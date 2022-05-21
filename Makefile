@@ -1,7 +1,7 @@
 # Instuction: Run make. That's it. 
 CC=gcc
 CFLAGS=-Wall -g -pedantic
-all: message clean calc_unbounded_int test_unbounded run_tests  run_calc
+all: message clean calc_unbounded_int test_unbounded run_tests run_calc
 $(VERBOSE).SILENT:
 
 message:
@@ -44,7 +44,7 @@ test_unbounded: test_unbounded.o unbounded_int.o
 	printf "."
 	sleep 0.25
 	printf "."
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lm
 	sleep 0.25
 	printf "Ok!\n"
 
