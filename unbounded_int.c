@@ -229,8 +229,7 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
             retenue = tmp / 10;
             c_n = malloc(sizeof(chiffre));
             if(c_n == NULL) return error;
-            c_n->c 
-            = (tmp % 10) + '0';
+            c_n->c = (tmp % 10) + '0';
             c_n->suivant = c_prev_n;
             c_prev_n->precedent = c_n;
             c_prev_n = c_n;
@@ -249,7 +248,9 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
             c_prev_n = c_n;
             sommeInt.len++;
         }
-    }else if(retenue > 0) {
+    }
+    
+    if(retenue > 0) {
         c_n = malloc(sizeof(chiffre));
         if(c_n == NULL) 
             return error;
