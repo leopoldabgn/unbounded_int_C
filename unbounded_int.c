@@ -157,6 +157,16 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         @bug: cas où a, b < 0!
     */
 
+    if(a.signe == '*' || b.signe == '*')
+        return -2;
+    // cas particulier. Si les deux valent 0.
+    // En effet, il peuvent avoir un signe + ou -
+    if(a.len == 1 && a.premier->c == '0' &&
+       b.len == 1 && b.premier->c == '0')
+       return 0;
+
+    // Le if avant evite de renvoyer un mauvais resultat si a
+    // et b valent 0.
     if (a.signe == '+' && b.signe == '-') return 1;
     if (b.signe == '+' && a.signe == '-') return -1;
 
@@ -172,6 +182,7 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         if(n_a->c > n_b->c) return sign;
         if(n_a->c < n_b->c) return -sign;
     }
+    
     return 0;
 }
 
