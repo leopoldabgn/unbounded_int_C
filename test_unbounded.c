@@ -71,7 +71,7 @@ static void test_unbounded_operations() {
     char* str2[] = {"9000000000000000000000000000000000000000000000000000000000000000000000000000000",
                     "1"};
     s1 = sizeof(str1) / sizeof(str1[0]);
-    printf("SIZEEE : %d\n", s1);
+
     for(int i=0;i<s1;i++) {
         a = string2unbounded_int(str1[i]);
         b = string2unbounded_int(str2[i]);
@@ -151,8 +151,6 @@ int main() {
     destroy_unbounded_int(u2);
     destroy_unbounded_int(u3);
     destroy_unbounded_int(prod);
-    printf("\n");
-    printf("\t\t[LOG]: Finished\n");
 
     unbounded_int a = string2unbounded_int("-99901");
     unbounded_int b = unbounded_int_dividing_2(a);
@@ -175,6 +173,8 @@ int main() {
     print_unbounded_int(z);
     printf("\n");
 
+    printf("isvalid = %d\n", is_valid_uint(nb)); // 1
+
     free(res);
     destroy_unbounded_int(nb);
     destroy_unbounded_int(z);
@@ -184,6 +184,13 @@ int main() {
     print_unbounded_int(result_div);
 
 
+    unbounded_int x = {.signe='*'};
+    unbounded_int y = {.signe='+'}; // Mais il faut aussi que len > 0 !
+    printf("isvalid = %d\n", is_valid_uint(x)); // 0
+    printf("isvalid = %d\n", is_valid_uint(y)); // 0
+
+    printf("\n");
+    printf("\t\t[LOG]: Finished\n");
 
     return EXIT_SUCCESS;
 }
