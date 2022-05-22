@@ -511,29 +511,31 @@ unbounded_int binary_division(char *a, char *b) {
     var[1] = '\0';
     char *result = calloc(100, sizeof(char));
     char *tmp = calloc(100, sizeof(char));
+    tmp[0] = '0';
     unbounded_int r = string2unbounded_int("0");
     unbounded_int zero = string2unbounded_int("0");
     unbounded_int b_int = binary_to_decimal(b);
 
-    for(int i=0; i < strlen(a); i++) {
-        printf("******");
+    for(size_t i=0; i < strlen(a); i++) {
+        //printf("******");
         unbounded_int tmp_int = string2unbounded_int(tmp);
 
         if(unbounded_int_cmp_unbounded_int(b_int, tmp_int) > 0) {
-            printf("*");
+            //printf("*");
             strcat(result, "0");
             var[0] = a[i];
             strcat(tmp, var);
             
-        }else {
-            printf("**");
+        }
+        else {
+            //printf("**");
             r = unbounded_int_difference(tmp_int, b_int);
             if(unbounded_int_cmp_unbounded_int(r, zero) == 0) {
-                printf("***");
+                //printf("***");
                 var[0] = a[i];
                 tmp = var;
             }else {
-                printf("****");
+                //printf("****");
                 r = delete_useless_zero(r);
                 strcat(result, "1");
                 var[0] = a[i];
