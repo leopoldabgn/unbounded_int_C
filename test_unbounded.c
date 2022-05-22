@@ -182,6 +182,11 @@ int main() {
     destroy_unbounded_int(nb);
     destroy_unbounded_int(z);
 
+    printf("\nx\n");
+    unbounded_int result_div = binary_division("1010", "11");
+    print_unbounded_int(result_div);
+
+
     unbounded_int x = {.signe='*'};
     unbounded_int y = {.signe='+'}; // Mais il faut aussi que len > 0 !
     printf("isvalid = %d\n", is_valid_uint(x)); // 0
