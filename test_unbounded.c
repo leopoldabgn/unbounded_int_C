@@ -154,5 +154,24 @@ int main() {
     printf("\n");
     printf("\t\t[LOG]: Finished\n");
 
+    unbounded_int a = string2unbounded_int("-99901");
+    unbounded_int b = unbounded_int_dividing_2(a);
+
+    print_unbounded_int(a);
+    print_unbounded_int_left(a);
+    print_unbounded_int(b);
+    print_unbounded_int_left(b);
+
+    destroy_unbounded_int(a);
+    destroy_unbounded_int(b);
+    
+    unbounded_int nb = string2unbounded_int("233");
+    char* res = decimal_to_binary(nb);
+
+    printf("res = %s\n", res);
+
+    free(res);
+    destroy_unbounded_int(nb);
+
     return EXIT_SUCCESS;
 }

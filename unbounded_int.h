@@ -32,4 +32,7 @@ void print_unbounded_int_left(unbounded_int u);
 void destroy_unbounded_int(unbounded_int u);
 unbounded_int calculate(unbounded_int a, char op, unbounded_int b);
 unbounded_int unbounded_int_copy(unbounded_int u);
+unbounded_int unbounded_int_dividing_2(unbounded_int a);
+char* decimal_to_binary(unbounded_int nb);
+
 #endif

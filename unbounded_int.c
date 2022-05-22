@@ -16,7 +16,6 @@ static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int
 static int unbounded_greater_equal_zero(unbounded_int a);
 static int unbounded_lesser_equal_zero(unbounded_int a);
 static unbounded_int unbounded_int_produit_aux(unbounded_int a, unbounded_int b);
-static unbounded_int decimal_to_binary(unbounded_int number);
 
 // static chiffre* loop_and_add(chiffre* x_n, int retenue, chiffre* c_prev_n, size_t* len);
 
@@ -428,37 +427,6 @@ unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b) {
     return produit;
 }
 
-static unbounded_int decimal_to_binary(unbounded_int number) {
-    /*@info: This function converts a unbounded_int in base 10 to base 2 
-    1) We divide the number by 2 with % and store rest in array
-    2) Divide number by 2 with / 
-    3) Repeat step 2 while number is > 0*/
-
-    char* str_number = unbounded_int2string(number); 
-    int n = atoi(str_number);
-    int size_arr = (int) (log2((double) n) + 1);
-    int a[size_arr], i;
-    
-    for(i = 0; n>0; i++) {
-        a[i] = n % 2;
-        n = n / 2;
-    }
-    char* s = malloc(sizeof(char) * i);
-    int total = i;
-    for(i = i - 1; i >=0; i--) {
-        printf("%d", a[i]);
-        s[total - i] = a[i];
-    }
-
-    unbounded_int res = string2unbounded_int(s);
-    if(number.signe == '+') res.signe = '+';
-    if(number.signe == '-') res.signe = '-';
-    print_unbounded_int(res);
-    free(s);
-    return res;
-
-}
-
 char *unbounded_int2string(unbounded_int i) {
     if(i.signe == '*')
         return NULL;
@@ -585,4 +553,72 @@ unbounded_int unbounded_int_copy(unbounded_int u) {
     unbounded_int res = unbounded_int_somme(u, zero);
     destroy_unbounded_int(zero);
     return res;
+}
+
+unbounded_int unbounded_int_dividing_2(unbounded_int a) {
+    unbounded_int error = (unbounded_int){.signe='*'};
+    if(a.signe == '*')
+        return error;
+    unbounded_int res = {.premier=NULL, .dernier=NULL, .signe=a.signe, .len=0};
+    int impair = 0, tmp;
+    chiffre *c_n = NULL, *c_prev_n = NULL, *a_n=a.premier;
+    
+    for(; a_n != NULL; a_n=a_n->suivant) {
+        tmp = ((a_n->c-'0') + impair*10) / 2;
+        impair = (a_n->c - '0') % 2;
+        c_n = malloc(sizeof(chiffre));
+        if(c_n == NULL) return error;
+        if(a_n == a.premier) {res.premier = c_n;}
+        c_n->c = tmp + '0';
+        c_n->precedent = c_prev_n;
+        if(c_prev_n != NULL) c_prev_n->suivant = c_n;
+        c_prev_n = c_n;
+        res.len++;
+    }
+    c_n->suivant = NULL;
+    res.dernier = c_n;
+
+    return delete_useless_zero(res);
+}
+
+// Uniquement sur les nombres positifs !
+char* decimal_to_binary(unbounded_int nb) {
+    if(nb.signe == '*' || nb.signe == '-')
+        return NULL;
+    int size = 20;
+    char* bin = calloc(sizeof(char), size);
+    if(bin == NULL)
+        return NULL;
+    bin[0] = '0'; // important ! si nb vaut 0 cela corrige un bug.
+
+    unbounded_int tmp = unbounded_int_copy(nb);
+    unbounded_int tmp2;
+    int i=0;
+
+    for(i=0;unbounded_int_cmp_ll(tmp, 0) != 0;i++, tmp=tmp2) {
+        if(i == size-1) {
+            char* ptr =  realloc(bin, size * 2);
+            if(ptr == NULL)
+                return NULL;
+            bin = ptr;
+            size *= 2;
+        }
+        bin[i] = ((tmp.dernier->c - '0') % 2) + '0';
+        tmp2 = unbounded_int_dividing_2(tmp);
+        destroy_unbounded_int(tmp);
+    }
+    destroy_unbounded_int(tmp);
+
+    int realSize = i == 0 ? 1 : i;
+    char* cpy = calloc(sizeof(char), realSize + 1); // On met des '\0' partout
+    if(cpy == NULL)
+        return NULL;
+
+    for(i=0;i<realSize;i++) {
+        cpy[realSize-1-i] = bin[i];
+    }
+    
+    free(bin);
+
+    return cpy;
 }
