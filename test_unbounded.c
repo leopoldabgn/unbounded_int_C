@@ -165,13 +165,13 @@ int main() {
     destroy_unbounded_int(a);
     destroy_unbounded_int(b);
     
-    unbounded_int nb = string2unbounded_int("233");
+    unbounded_int nb = string2unbounded_int("19999991");
     char* res = decimal_to_binary(nb);
 
     printf("res = %s\n", res);
 
     printf("\nBinary to Decimal: ");
-    unbounded_int z = binary_to_decimal("101111111110100010101101001100010000");
+    unbounded_int z = binary_to_decimal(res);
     print_unbounded_int(z);
     printf("\n");
 

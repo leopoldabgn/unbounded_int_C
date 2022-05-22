@@ -463,10 +463,10 @@ unbounded_int binary_to_decimal(char* bin) {
     unbounded_int a = string2unbounded_int("0");
     
     char * lg;
-    char * curr_char = malloc(sizeof(char));
-
+    char * curr_char = malloc(2*sizeof(char));
+    curr_char[1] = '\0';
     for(int i=0; i<strlen(bin); i++) {
-        *curr_char = bin[i];
+        curr_char[0] = bin[i];
 
         tmp = current;
         current = string2unbounded_int(curr_char);
@@ -477,12 +477,12 @@ unbounded_int binary_to_decimal(char* bin) {
         tmp = power;
         power = string2unbounded_int(lg);
         destroy_unbounded_int(tmp);
-        // free(lg);
+        free(lg);
 
         tmp = a;
         lg = longToStr((long) i);
         a = string2unbounded_int(lg);
-        // free(lg);
+        free(lg);
         destroy_unbounded_int(tmp);
 
         tmp = power;
@@ -492,7 +492,6 @@ unbounded_int binary_to_decimal(char* bin) {
         tmp = power;
         power = unbounded_int_difference(power, one);
         destroy_unbounded_int(tmp);
-
 
         tmp = puissance;
         puissance = unbounded_int_puissance(two, power);
