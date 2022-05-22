@@ -183,8 +183,11 @@ int main() {
     destroy_unbounded_int(z);
 
     printf("\n\n");
-    unbounded_int result_div = binary_division("100110", "10");
-    print_unbounded_int(result_div);
+    char* result_div = binary_division("101111", "111");
+    
+    printf("%s\n", result_div);
+
+    free(result_div);
 
 
     unbounded_int x = {.signe='*'};

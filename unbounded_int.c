@@ -512,16 +512,20 @@ unbounded_int binary_to_decimal(char* bin) {
 char * binary_division(char *a, char * b) {
     char var[2];
     var[1] = '\0';
-    char * result = calloc(100, sizeof(char));
-    char * tmp = calloc(100, sizeof(char));
+    size_t len_a = strlen(a);
+    char * result = calloc(len_a+10, sizeof(char));
+    char * tmp = calloc(len_a+10, sizeof(char));
     char current_char;
     unbounded_int b_dec = binary_to_decimal(b);
 
-
-    for(int i=0; i<strlen(a); i++) {
+    for(int i=0; i<len_a; i++) {
         // a = 101010; b = 110 
         current_char = a[i]; // current number 
         var[0] = current_char;
+        char* ptr = realloc(tmp, strlen(tmp)+3);
+        if(ptr == NULL)
+            return NULL;
+        tmp = ptr;
         strcat(tmp, var); // current rest
         unbounded_int current_rest_dec = binary_to_decimal(tmp);
         // printf("\ncurrent tmp: ");
@@ -534,11 +538,16 @@ char * binary_division(char *a, char * b) {
         }else {
             strcat(result, "1");
             unbounded_int sub = unbounded_int_difference(current_rest_dec, b_dec);
+            free(tmp);
             tmp = decimal_to_binary(sub);
+            destroy_unbounded_int(sub);
             // printf("(**) res at %d:  %s\n", i, result);
         }
+        destroy_unbounded_int(current_rest_dec);
         // printf("tmp: %s", tmp);
     }
+    free(tmp);
+    destroy_unbounded_int(b_dec);
     // unbounded_int final_res = binary_to_decimal(result);
     return result;
 }
@@ -812,10 +821,6 @@ char* decimal_to_binary(unbounded_int nb) {
     free(bin);
 
     return cpy;
-}
-
-unbounded_int unbounded_int_division(unbounded_int a, unbounded_int b) {
-    return a;
 }
 
 unbounded_int unbounded_int_modulo(unbounded_int nb, unbounded_int mod) {
