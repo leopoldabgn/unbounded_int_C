@@ -667,7 +667,7 @@ char* decimal_to_binary(unbounded_int nb) {
     if(!is_valid_uint(nb))
         return NULL;
     int size = 20;
-    char* bin = calloc(sizeof(char), size);
+    char* bin = calloc(size, sizeof(char));
     if(bin == NULL)
         return NULL;
     bin[0] = '0'; // important ! si nb vaut 0 cela corrige un bug.
@@ -691,7 +691,7 @@ char* decimal_to_binary(unbounded_int nb) {
     destroy_unbounded_int(tmp);
 
     int realSize = i == 0 ? 1 : i;
-    char* cpy = calloc(sizeof(char), realSize + 1); // On met des '\0' partout
+    char* cpy = calloc(realSize + 1, sizeof(char)); // On met des '\0' partout
     if(cpy == NULL)
         return NULL;
 

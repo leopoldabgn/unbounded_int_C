@@ -163,7 +163,10 @@ int main() {
     destroy_unbounded_int(a);
     destroy_unbounded_int(b);
     
-    unbounded_int nb = string2unbounded_int("19999991");
+    //////////
+    // Ces operations coutent beaucoup de memoire
+
+    unbounded_int nb = string2unbounded_int("1999991");
     char* res = decimal_to_binary(nb);
 
     printf("res = %s\n", res);
