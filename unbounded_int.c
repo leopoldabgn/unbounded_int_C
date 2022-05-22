@@ -543,6 +543,20 @@ char * binary_division(char *a, char * b) {
     return result;
 }
 
+unbounded_int unbounded_int_division(unbounded_int a, unbounded_int b) {
+    if(!is_valid_uint(a) || !is_valid_uint(b))
+        return (unbounded_int) {.signe='*'};
+    char * a_char = decimal_to_binary(a);
+    char * b_char = decimal_to_binary(b);
+    char * res = binary_division(a_char, b_char);
+    unbounded_int result_int = binary_to_decimal(res);
+    free(a_char);
+    free(b_char);
+    free(res);
+    return result_int;
+}
+
+
 // unbounded_int binary_division2(char *a, char *b) {
 //     // 101010 / 110
 //     char var[2];
