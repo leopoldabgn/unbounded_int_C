@@ -17,12 +17,15 @@ static int unbounded_greater_equal_zero(unbounded_int a);
 static int unbounded_lesser_equal_zero(unbounded_int a);
 static unbounded_int unbounded_int_produit_aux(unbounded_int a, unbounded_int b);
 static unbounded_int unbounded_int_puissance(unbounded_int a, unbounded_int b);
-// static unbounded_int binary_to_decimal(char* bin);
 
 // static chiffre* loop_and_add(chiffre* x_n, int retenue, chiffre* c_prev_n, size_t* len);
 
+int is_valid_uint(unbounded_int nb) {
+    return isSign(nb.signe) && nb.len > 0;
+}
+
 void print_unbounded_int(unbounded_int u) {
-    if(u.signe == '*') {
+    if(!is_valid_uint(u)) {
         puts("ERROR NUMBER");
         return;
     }
@@ -35,7 +38,7 @@ void print_unbounded_int(unbounded_int u) {
 }
 
 void print_unbounded_int_left(unbounded_int u) {
-    if(u.signe == '*') {
+    if(!is_valid_uint(u)) {
         puts("ERROR NUMBER");
         return;
     }
@@ -47,7 +50,7 @@ void print_unbounded_int_left(unbounded_int u) {
 }
 
 void destroy_unbounded_int(unbounded_int u) {
-    if(u.signe == '*')
+    if(!is_valid_uint(u))
         return;
     int len = 0;
     chiffre* c = u.premier, *next = u.premier;
@@ -161,7 +164,7 @@ int unbounded_int_cmp_unbounded_int(unbounded_int a, unbounded_int b) {
         @bug: cas où a, b < 0!
     */
 
-    if(a.signe == '*' || b.signe == '*')
+    if(!is_valid_uint(a) || !is_valid_uint(b))
         return -2;
     // cas particulier. Si les deux valent 0.
     // En effet, il peuvent avoir un signe + ou -
@@ -209,7 +212,7 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
     */
 
     unbounded_int error = (unbounded_int){.signe='*'};
-    if(a.signe == '*' || b.signe == '*')
+    if(!is_valid_uint(a) || !is_valid_uint(b))
         return error;
 
     unbounded_int sommeInt = {.premier=NULL, .dernier=NULL, .signe='+', .len=0};
@@ -312,7 +315,7 @@ unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
                 * b - |a| if b >= 0, a < 0
             }
     */
-    if(a.signe == '*' || b.signe == '*')
+    if(!is_valid_uint(a) || !is_valid_uint(b))
         return (unbounded_int){.signe='*'};
     if(unbounded_greater_equal_zero(a) && unbounded_greater_equal_zero(b)) {
         return unbounded_int_somme_aux(a, b);
@@ -370,7 +373,7 @@ static unbounded_int unbounded_int_produit_aux(unbounded_int a, unbounded_int b)
         
     */
     unbounded_int error = (unbounded_int){.signe='*'};
-    if(a.signe == '*' || b.signe == '*')
+    if(!is_valid_uint(a) || !is_valid_uint(b))
         return error;
     
     int retenue = 0;
@@ -420,9 +423,10 @@ unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b) {
         + * - = - (signe différente) -> -
         - * - = + (même signe) -> +
     */
-
     int res = a.signe ^ b.signe;
     unbounded_int produit = unbounded_int_produit_aux(a, b);
+    if(!is_valid_uint(produit))
+        return produit;
     if(res == 0) produit.signe = '+';
     else produit.signe = '-';
 
@@ -519,7 +523,7 @@ unbounded_int binary_to_decimal(char* bin) {
 }
 
 char *unbounded_int2string(unbounded_int i) {
-    if(i.signe == '*')
+    if(!is_valid_uint(i))
         return NULL;
     int sign = i.signe == '-' ? 1 : 0;
     char* str = malloc(sizeof(char) * (i.len+sign+1));
@@ -540,7 +544,7 @@ char *unbounded_int2string(unbounded_int i) {
 
 // Permet de retirer les '0' inutile au debut d'un nombre.
 static unbounded_int delete_useless_zero(unbounded_int nb) {
-    if(nb.signe == '*' || nb.len <= 1)
+    if(!is_valid_uint(nb) || nb.len <= 1)
         return nb;
     chiffre* c = nb.premier;
     for(;c->c == '0' && c != nb.dernier;) {
@@ -554,8 +558,9 @@ static unbounded_int delete_useless_zero(unbounded_int nb) {
 }
 
 unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
-    if(a.signe == '*' || b.signe == '*')
+    if(!is_valid_uint(a) || !is_valid_uint(b))
         return (unbounded_int){.signe='*'};
+
     if(a.signe == '+' && b.signe == '-') {
         b.signe = '+';
         return unbounded_int_somme(a, b); // return unbounded_int_somme(a, b);
@@ -582,7 +587,7 @@ unbounded_int unbounded_int_difference(unbounded_int a, unbounded_int b) {
 
 static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int b) {
     unbounded_int error = (unbounded_int){.signe='*'};
-    if(a.signe == '*' || b.signe == '*')
+    if(!is_valid_uint(a) || !is_valid_uint(b))
         return error;
     unbounded_int subInt = {.premier=NULL, .dernier=NULL, .signe='+', .len=a.len};
 
@@ -639,6 +644,7 @@ unbounded_int calculate(unbounded_int a, char op, unbounded_int b) {
     }
 }
 
+// Pratique pour faire une copie !
 unbounded_int unbounded_int_copy(unbounded_int u) {
     unbounded_int zero = string2unbounded_int("0");
     unbounded_int res = unbounded_int_somme(u, zero);
@@ -648,7 +654,7 @@ unbounded_int unbounded_int_copy(unbounded_int u) {
 
 unbounded_int unbounded_int_dividing_2(unbounded_int a) {
     unbounded_int error = (unbounded_int){.signe='*'};
-    if(a.signe == '*')
+    if(!is_valid_uint(a))
         return error;
     unbounded_int res = {.premier=NULL, .dernier=NULL, .signe=a.signe, .len=0};
     int impair = 0, tmp;
@@ -672,9 +678,9 @@ unbounded_int unbounded_int_dividing_2(unbounded_int a) {
     return delete_useless_zero(res);
 }
 
-// Uniquement sur les nombres positifs !
+// Convertit le nombre sans prendre en compte le signe '-'
 char* decimal_to_binary(unbounded_int nb) {
-    if(nb.signe == '*' || nb.signe == '-')
+    if(!is_valid_uint(nb))
         return NULL;
     int size = 20;
     char* bin = calloc(sizeof(char), size);
