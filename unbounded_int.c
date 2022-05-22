@@ -16,8 +16,7 @@ static unbounded_int unbounded_int_difference_aux(unbounded_int a, unbounded_int
 static int unbounded_greater_equal_zero(unbounded_int a);
 static int unbounded_lesser_equal_zero(unbounded_int a);
 static unbounded_int unbounded_int_produit_aux(unbounded_int a, unbounded_int b);
-static unbounded_int decimal_to_binary(unbounded_int number);
-
+static unbounded_int unbounded_int_puissance(unbounded_int a, unbounded_int b);
 // static chiffre* loop_and_add(chiffre* x_n, int retenue, chiffre* c_prev_n, size_t* len);
 
 void print_unbounded_int(unbounded_int u) {
@@ -428,35 +427,15 @@ unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b) {
     return produit;
 }
 
-static unbounded_int decimal_to_binary(unbounded_int number) {
-    /*@info: This function converts a unbounded_int in base 10 to base 2 
-    1) We divide the number by 2 with % and store rest in array
-    2) Divide number by 2 with / 
-    3) Repeat step 2 while number is > 0*/
-
-    char* str_number = unbounded_int2string(number); 
-    int n = atoi(str_number);
-    int size_arr = (int) (log2((double) n) + 1);
-    int a[size_arr], i;
-    
-    for(i = 0; n>0; i++) {
-        a[i] = n % 2;
-        n = n / 2;
+static unbounded_int unbounded_int_puissance(unbounded_int a, unbounded_int b) {
+    unbounded_int zero = string2unbounded_int("0");
+    unbounded_int one = string2unbounded_int("1");
+    unbounded_int total = one;
+    for(; unbounded_int_cmp_unbounded_int(b, zero)>0; b = unbounded_int_difference(b, one)) {
+        total = unbounded_int_produit(total, a);
+        print_unbounded_int(total);
     }
-    char* s = malloc(sizeof(char) * i);
-    int total = i;
-    for(i = i - 1; i >=0; i--) {
-        printf("%d", a[i]);
-        s[total - i] = a[i];
-    }
-
-    unbounded_int res = string2unbounded_int(s);
-    if(number.signe == '+') res.signe = '+';
-    if(number.signe == '-') res.signe = '-';
-    print_unbounded_int(res);
-    free(s);
-    return res;
-
+    return total;
 }
 
 char *unbounded_int2string(unbounded_int i) {
