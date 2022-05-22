@@ -1,7 +1,7 @@
 # Instuction: Run make. That's it. 
 CC=gcc
 CFLAGS=-Wall -g -pedantic 
-all: message clean calc_unbounded_int test_unbounded run_tests run_calc
+all: message clean calc_unbounded_int test_unbounded
 $(VERBOSE).SILENT:
 
 message:
