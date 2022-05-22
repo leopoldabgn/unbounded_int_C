@@ -37,5 +37,4 @@ char* decimal_to_binary(unbounded_int nb);
 unbounded_int binary_to_decimal(char* bin);
 int is_valid_uint(unbounded_int nb);
 unbounded_int binary_division(char *a, char *b);
-
 #endif

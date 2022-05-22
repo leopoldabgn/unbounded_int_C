@@ -182,8 +182,8 @@ int main() {
     destroy_unbounded_int(nb);
     destroy_unbounded_int(z);
 
-    printf("\nx\n");
-    unbounded_int result_div = binary_division("1010", "11");
+    printf("\n\n");
+    unbounded_int result_div = binary_division("100110", "10");
     print_unbounded_int(result_div);
 
 
