@@ -461,7 +461,7 @@ unbounded_int binary_to_decimal(char* bin) {
     unbounded_int tmp;
     unbounded_int puissance = string2unbounded_int("1");
     unbounded_int a = string2unbounded_int("0");
-    
+
     char * lg;
     char * curr_char = malloc(2*sizeof(char));
     curr_char[1] = '\0';
@@ -516,6 +516,49 @@ unbounded_int binary_to_decimal(char* bin) {
     free(curr_char);
     return total;
 
+}
+
+unbounded_int binary_division(char *a, char *b) {
+    char var[2];
+    var[1] = '\0';
+    char *result = calloc(100, sizeof(char));
+    char *tmp = calloc(100, sizeof(char));
+    unbounded_int r = string2unbounded_int("0");
+    unbounded_int zero = string2unbounded_int("0");
+    unbounded_int b_int = binary_to_decimal(b);
+
+    for(int i=0; i < strlen(a); i++) {
+        printf("******");
+        unbounded_int tmp_int = string2unbounded_int(tmp);
+
+        if(unbounded_int_cmp_unbounded_int(b_int, tmp_int) > 0) {
+            printf("*");
+            strcat(result, "0");
+            var[0] = a[i];
+            strcat(tmp, var);
+            
+        }else {
+            printf("**");
+            r = unbounded_int_difference(tmp_int, b_int);
+            if(unbounded_int_cmp_unbounded_int(r, zero) == 0) {
+                printf("***");
+                var[0] = a[i];
+                tmp = var;
+            }else {
+                printf("****");
+                r = delete_useless_zero(r);
+                strcat(result, "1");
+                var[0] = a[i];
+                unbounded_int aux = string2unbounded_int(var);
+                tmp = unbounded_int2string(unbounded_int_somme(r, aux));
+            }
+        }
+    }
+    if (strcmp(tmp, "0") !=0) {
+        strcat(result, "0");
+    }
+    unbounded_int res_int = string2unbounded_int(result);
+    return res_int;
 }
 
 char *unbounded_int2string(unbounded_int i) {
