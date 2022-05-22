@@ -1,6 +1,6 @@
 # Instuction: Run make. That's it. 
 CC=gcc
-CFLAGS=-Wall -g -pedantic
+CFLAGS=-Wall -g -pedantic 
 all: message clean calc_unbounded_int test_unbounded run_tests run_calc
 $(VERBOSE).SILENT:
 
@@ -28,12 +28,12 @@ calc_unbounded_int: calc_unbounded_int.o unbounded_int.o
 	printf "."
 	sleep 0.25
 	printf "."
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lm
 	sleep 0.25
 	printf "Ok!\n"
 
 calc_unbounded_int.o: calc_unbounded_int.c unbounded_int.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $< -lm
 
 test_unbounded: test_unbounded.o unbounded_int.o
 	sleep 0.25
@@ -49,10 +49,10 @@ test_unbounded: test_unbounded.o unbounded_int.o
 	printf "Ok!\n"
 
 test_unbounded.o: test_unbounded.c unbounded_int.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $< -lm
 
 unbounded_int.o: unbounded_int.c unbounded_int.h
-	$(CC) $(CFLAGS) -o $@ -c $<
+	$(CC) $(CFLAGS) -o $@ -c $< -lm
 
 run_tests:
 	sleep 1
