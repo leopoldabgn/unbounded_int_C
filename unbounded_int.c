@@ -432,11 +432,19 @@ unbounded_int unbounded_int_produit(unbounded_int a, unbounded_int b) {
 static unbounded_int unbounded_int_puissance(unbounded_int a, unbounded_int b) {
     unbounded_int zero = string2unbounded_int("0");
     unbounded_int one = string2unbounded_int("1");
-    unbounded_int total = one;
-    for(; unbounded_int_cmp_unbounded_int(b, zero)>0; b = unbounded_int_difference(b, one)) {
+    unbounded_int total = string2unbounded_int("1");
+    unbounded_int tmp;
+    unbounded_int count = unbounded_int_copy(b);
+
+    for(; unbounded_int_cmp_unbounded_int(count, zero)>0;) {
+        tmp = total;
         total = unbounded_int_produit(total, a);
-        // print_unbounded_int(total);
+        destroy_unbounded_int(tmp);
+        tmp = count;
+        count = unbounded_int_difference(count, one);
+        destroy_unbounded_int(tmp);
     }
+    destroy_unbounded_int(count);
     destroy_unbounded_int(zero);
     destroy_unbounded_int(one);
     return total;
