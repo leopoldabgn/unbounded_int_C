@@ -748,3 +748,25 @@ char* decimal_to_binary(unbounded_int nb) {
 
     return cpy;
 }
+
+unbounded_int unbounded_int_division(unbounded_int a, unbounded_int b) {
+    return a;
+}
+
+unbounded_int unbounded_int_modulo(unbounded_int nb, unbounded_int mod) {
+    if(!is_valid_uint(nb) || !is_valid_uint(mod))
+        return (unbounded_int) {.signe='*'};
+    if(unbounded_int_cmp_unbounded_int(nb, mod) < 0)
+        return unbounded_int_copy(nb);
+    else if(unbounded_int_cmp_unbounded_int(nb, mod) == 0)
+        return string2unbounded_int("0");
+
+    unbounded_int division = unbounded_int_division(nb, mod);
+    unbounded_int produit = unbounded_int_produit(division, mod);
+    unbounded_int res = unbounded_int_difference(nb, produit);
+
+    destroy_unbounded_int(division);
+    destroy_unbounded_int(produit);
+
+    return res;
+}
