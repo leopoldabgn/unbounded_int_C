@@ -18,8 +18,6 @@ static int unbounded_lesser_equal_zero(unbounded_int a);
 static unbounded_int unbounded_int_produit_aux(unbounded_int a, unbounded_int b);
 static unbounded_int unbounded_int_puissance(unbounded_int a, unbounded_int b);
 
-// static chiffre* loop_and_add(chiffre* x_n, int retenue, chiffre* c_prev_n, size_t* len);
-
 int is_valid_uint(unbounded_int nb) {
     return isSign(nb.signe) && nb.len > 0;
 }
@@ -232,15 +230,21 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
         sommeInt.len++;
     }
 
+    if(a.len != b.len) {
+        chiffre *x = a.len > b.len ? a_n : b_n;
+        for(;x != NULL; x = x->precedent) {
+            int tmp = (x->c-'0') + retenue;
+            retenue = tmp / 10;
+            c_n = malloc(sizeof(chiffre));
+            if(c_n == NULL) return error;
+            c_n->c = (tmp % 10) + '0';
+            c_n->suivant = c_prev_n;
+            c_prev_n->precedent = c_n;
+            c_prev_n = c_n;
+            sommeInt.len++;
+        }
+    }
     /*
-    chiffre* res;
-
-    if (a.len > b.len)
-        res = loop_and_add(a_n, retenue, c_prev_n, &sommeInt.len);
-    else if (b.len > a.len)
-        res = loop_and_add(b_n, retenue, c_prev_n, &sommeInt.len);
-    */
-
     if (a.len > b.len) { 
         for(;a_n != NULL; a_n = a_n->precedent) {
             int tmp = (a_n->c-'0') + retenue;
@@ -267,7 +271,7 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
             sommeInt.len++;
         }
     }
-    
+    */
     if(retenue > 0) {
         c_n = malloc(sizeof(chiffre));
         if(c_n == NULL) 
@@ -284,26 +288,6 @@ static unbounded_int unbounded_int_somme_aux(unbounded_int a, unbounded_int b) {
 
     return sommeInt;
 }
-
-/*
-static chiffre* loop_and_add(chiffre* x_n, int retenue, chiffre* c_prev_n, size_t* len) {
-    // @info: fonction auxiliaire, utilisé par unbounded_int_somme_aux(a, b)
-    chiffre* c_n = NULL;
-    for(; x_n != NULL; x_n = x_n->precedent) {
-        int tmp = (x_n->c-'0') + retenue;
-        retenue = tmp / 10;
-        c_n = malloc(sizeof(chiffre));
-        if(c_n == NULL) return NULL;
-        c_n->c = (tmp % 10) + '0';
-        c_n->suivant = c_prev_n;
-        c_prev_n->precedent = c_n; // c_prev_n forcement != NULL
-        c_prev_n = c_n;
-        *len += 1;
-    }
-
-    return c_n; // On renvoie le nombre de tour de boucle
-}
-*/
 
 unbounded_int unbounded_int_somme(unbounded_int a, unbounded_int b) {
     /*
