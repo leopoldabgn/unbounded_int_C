@@ -528,13 +528,8 @@ char * binary_division(char *a, char * b) {
         tmp = ptr;
         strcat(tmp, var); // current rest
         unbounded_int current_rest_dec = binary_to_decimal(tmp);
-        // printf("\ncurrent tmp: ");
-        // print_unbounded_int(current_rest_dec);
-        // printf("\nb: ");
-        // print_unbounded_int(b_dec);
         if(unbounded_int_cmp_unbounded_int(b_dec, current_rest_dec) > 0) {
             strcat(result, "0");
-            // printf("(*) res at %d:  %s\n", i, result);
         }else {
             strcat(result, "1");
             unbounded_int sub = unbounded_int_difference(current_rest_dec, b_dec);
@@ -564,66 +559,6 @@ unbounded_int unbounded_int_division(unbounded_int a, unbounded_int b) {
     free(res);
     return result_int;
 }
-
-
-// unbounded_int binary_division2(char *a, char *b) {
-//     // 101010 / 110
-//     char var[2];
-//     var[1] = '\0';
-//     char *result = calloc(100, sizeof(char));
-//     char *tmp = calloc(100, sizeof(char));
-//     char *tmp2 = calloc(100, sizeof(char));
-//     tmp[0] = a[0];
-//     unbounded_int r = string2unbounded_int("0");
-//     unbounded_int zero = string2unbounded_int("0");
-//     unbounded_int b_int = binary_to_decimal(b);
-
-//     for(size_t i=0; i < strlen(a); i++) {
-//         // tmp = 1
-//         // b = 110
-//         // 1 < 110 
-        
-//         unbounded_int tmp_int = binary_to_decimal(tmp);
-//         print_unbounded_int(tmp_int);
-//         if(unbounded_int_cmp_unbounded_int(b_int, tmp_int) > 0) {
-//             printf("*\n");
-//             strcat(result, "0"); // goes to quotient
-//             var[0] = a[i];
-//             strcat(tmp2, var);
-//             tmp = tmp2;
-//             printf("%s", tmp2);
-//         }
-//         // 1010 > 110
-//         else {
-//             printf("**\n");
-//             strcat(result, "1");
-//             r = unbounded_int_difference(tmp_int, b_int); // in decimal
-//             if(unbounded_int_cmp_unbounded_int(r,zero) == 0) {
-//                 printf("*\n");
-//                 var[0] = a[i];
-//                 tmp2 = var;
-//                 tmp = tmp2;
-//                 printf("%s", tmp2);
-//             }else {
-//                 printf("***\n");
-//                 r = delete_useless_zero(r);
-//                 char* bin = decimal_to_binary(r);
-//                 var[0] = a[i];
-//                 tmp2 = strcat(bin, var);
-//                 tmp = tmp2;
-//                 printf("%s", tmp2);
-//             }
-//         }
-//     }
-
-//     // if (strcmp(tmp2, "0") !=0) {
-//     //     strcat(result, "0");
-//     // }
-
-//     printf("%s", result);
-//     unbounded_int res_int = binary_to_decimal(result);
-//     return res_int;
-// }
 
 char *unbounded_int2string(unbounded_int i) {
     if(!is_valid_uint(i))
