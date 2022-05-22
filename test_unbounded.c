@@ -182,10 +182,28 @@ int main() {
     destroy_unbounded_int(nb);
     destroy_unbounded_int(z);
 
-    printf("\n\n");
-    unbounded_int result_div = binary_division("100110", "10");
-    print_unbounded_int(result_div);
+    // printf("\n\n");
+    // char * bin_res = binary_division("100110", "10");
+    // unbounded_int result_div = binary_to_decimal(bin_res);
 
+    // print_unbounded_int(result_div);
+
+
+    unbounded_int int_a = string2unbounded_int("257");
+    unbounded_int int_b = string2unbounded_int("2");
+    unbounded_int int_res = unbounded_int_division(a, b);
+
+
+    printf("\nDIV TEST: ");
+    print_unbounded_int(int_res);
+    unbounded_int int_res_2 = unbounded_int_modulo(a, b);
+    printf("\nMOD TEST: ");
+    print_unbounded_int(int_res_2);
+
+    destroy_unbounded_int(int_a);
+    destroy_unbounded_int(int_b);
+    destroy_unbounded_int(int_res);
+    destroy_unbounded_int(int_res_2);
 
     unbounded_int x = {.signe='*'};
     unbounded_int y = {.signe='+'}; // Mais il faut aussi que len > 0 !
