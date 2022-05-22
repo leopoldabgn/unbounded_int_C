@@ -34,5 +34,7 @@ unbounded_int calculate(unbounded_int a, char op, unbounded_int b);
 unbounded_int unbounded_int_copy(unbounded_int u);
 unbounded_int unbounded_int_dividing_2(unbounded_int a);
 char* decimal_to_binary(unbounded_int nb);
+unbounded_int binary_to_decimal(char* bin);
+
 
 #endif

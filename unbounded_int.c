@@ -17,7 +17,7 @@ static int unbounded_greater_equal_zero(unbounded_int a);
 static int unbounded_lesser_equal_zero(unbounded_int a);
 static unbounded_int unbounded_int_produit_aux(unbounded_int a, unbounded_int b);
 static unbounded_int unbounded_int_puissance(unbounded_int a, unbounded_int b);
-static unbounded_int binary_to_decimal(char* bin);
+// static unbounded_int binary_to_decimal(char* bin);
 
 // static chiffre* loop_and_add(chiffre* x_n, int retenue, chiffre* c_prev_n, size_t* len);
 
@@ -450,25 +450,70 @@ static unbounded_int unbounded_int_puissance(unbounded_int a, unbounded_int b) {
     return total;
 }
 
-static unbounded_int binary_to_decimal(char* bin) {
+unbounded_int binary_to_decimal(char* bin) {
     unbounded_int total = string2unbounded_int("0");
     unbounded_int two = string2unbounded_int("2");
+    unbounded_int one = string2unbounded_int("1");
 
-    unbounded_int current;
-    unbounded_int power;
-
+    unbounded_int current = string2unbounded_int("0");
+    unbounded_int power = string2unbounded_int("0");
+    unbounded_int produit = string2unbounded_int("0");
+    unbounded_int tmp;
+    unbounded_int puissance = string2unbounded_int("1");
+    unbounded_int a = string2unbounded_int("0");
+    
+    char * lg;
     char * curr_char = malloc(sizeof(char));
 
     for(int i=0; i<strlen(bin); i++) {
         *curr_char = bin[i];
+
+        tmp = current;
         current = string2unbounded_int(curr_char);
-        long a = strlen(bin) - i - 1;
-        power = string2unbounded_int(longToStr(a));
-        total = unbounded_int_somme(total, unbounded_int_produit(current,unbounded_int_puissance(two, power)));
+        destroy_unbounded_int(tmp);
+
+        lg = longToStr(strlen(bin));
+
+        tmp = power;
+        power = string2unbounded_int(lg);
+        destroy_unbounded_int(tmp);
+        // free(lg);
+
+        tmp = a;
+        lg = longToStr((long) i);
+        a = string2unbounded_int(lg);
+        // free(lg);
+        destroy_unbounded_int(tmp);
+
+        tmp = power;
+        power = unbounded_int_difference(power, a);
+        destroy_unbounded_int(tmp);
+
+        tmp = power;
+        power = unbounded_int_difference(power, one);
+        destroy_unbounded_int(tmp);
+
+
+        tmp = puissance;
+        puissance = unbounded_int_puissance(two, power);
+        destroy_unbounded_int(tmp);
+
+        tmp = produit;
+        produit = unbounded_int_produit(current, puissance);
+        destroy_unbounded_int(tmp);
+
+        tmp = total;
+        total = unbounded_int_somme(total, produit);
+        destroy_unbounded_int(tmp);
     }
+
     destroy_unbounded_int(two);
     destroy_unbounded_int(current);
     destroy_unbounded_int(power);
+    destroy_unbounded_int(produit);
+    destroy_unbounded_int(one);
+    destroy_unbounded_int(a);
+    destroy_unbounded_int(puissance);
     free(curr_char);
     return total;
 

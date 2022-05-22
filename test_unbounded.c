@@ -90,7 +90,7 @@ static void test_unbounded_operations() {
 }
 
 int main() {
-    
+
     printf("\n");
     printf("\t\t [LOG]: Running test_unbounded.c\n\n");
     test_unbounded_operations();
@@ -170,8 +170,14 @@ int main() {
 
     printf("res = %s\n", res);
 
+    printf("\nBinary to Decimal: ");
+    unbounded_int z = binary_to_decimal("101111111110100010101101001100010000");
+    print_unbounded_int(z);
+    printf("\n");
+
     free(res);
     destroy_unbounded_int(nb);
+    destroy_unbounded_int(z);
 
     return EXIT_SUCCESS;
 }
