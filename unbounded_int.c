@@ -509,7 +509,7 @@ unbounded_int binary_to_decimal(char* bin) {
 
 }
 
-char * unbounded_int_division(char *a, char * b) {
+char * binary_division(char *a, char * b) {
     char var[2];
     var[1] = '\0';
     char * result = calloc(100, sizeof(char));
